@@ -67,6 +67,15 @@
   .tag{display:inline-block;background:#2b3568;border:1px solid var(--line);border-radius:999px;
     padding:3px 10px;font-size:12px;margin:2px;}
   .num-in{width:54px;text-align:center;font-size:15px;}
+  /* modal (분석·시뮬 팝업) */
+  .modal-bg{position:fixed;inset:0;z-index:50;background:rgba(8,10,24,.72);backdrop-filter:blur(5px);
+    display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
+  .modal-bg.open{display:flex;}
+  .modal{max-width:760px;width:100%;margin:auto;position:relative;animation:popin .18s ease;}
+  .modal .card{margin:0;}
+  .modal .close{position:absolute;top:14px;right:14px;width:34px;height:34px;padding:0;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;}
+  @keyframes popin{from{opacity:0;transform:translateY(12px) scale(.98);}to{opacity:1;transform:none;}}
   @media(max-width:760px){.grid{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -82,8 +91,8 @@
     <a href="#sec-stats">🧮 통계</a>
     <a href="#sec-gen">🎰 생성기</a>
     <a href="#sec-lucky">🏆 추천</a>
+    <a href="javascript:void(0)" id="openLab">🎯 분석·시뮬</a>
     <a href="#sec-hall">🏅 명예의전당</a>
-    <a href="#sec-lab">🎯 분석·시뮬</a>
   </nav>
 
   <div class="grid">
@@ -156,8 +165,14 @@
       <div id="hallRes"></div>
     </div>
 
-    <!-- 분석 & 시뮬 통합 -->
+  </div>
+</div>
+
+<!-- 분석 & 시뮬 팝업 -->
+<div class="modal-bg" id="labModal">
+  <div class="modal">
     <div class="card full" id="sec-lab">
+      <button class="close" id="labClose" title="닫기">✕</button>
       <h2>🎯 내 번호 분석 & 시뮬레이터 <small>한 세트로 둘 다</small></h2>
       <div class="row">
         <input class="num-in" id="m0" type="number" min="1" max="45" placeholder="1">
@@ -166,9 +181,7 @@
         <input class="num-in" id="m3" type="number" min="1" max="45" placeholder="4">
         <input class="num-in" id="m4" type="number" min="1" max="45" placeholder="5">
         <input class="num-in" id="m5" type="number" min="1" max="45" placeholder="6">
-        <button id="pasteMine">📋 붙여넣기</button>
         <button id="fillMine">🎲 랜덤</button>
-        <button id="copyMine">📤 복사</button>
       </div>
       <div class="seg" id="labSeg" style="margin-top:12px">
         <button data-m="anal" class="on">🔍 분석</button>
@@ -199,7 +212,6 @@
       <div class="hint" id="labHint" style="display:none">매 회차 같은 번호로 (주당금액÷1,000)장씩 샀다고 가정합니다. 1·2등은 회차별 실제값, 3등 150만·4등 5만·5등 5천원은 통상 근사값이에요.</div>
     </div>
   </div>
-  <p class="lead" style="margin-top:22px;text-align:center">made for fun · 인스웨이브 토이 프로젝트</p>
 </div>
 
 <script>
@@ -215,20 +227,6 @@ function renderBalls(container,nums,bonus){
   nums.forEach(n=>container.appendChild(ballEl(n)));
   if(bonus!=null){const p=document.createElement('span');p.className='plus';p.textContent='+';container.appendChild(p);container.appendChild(ballEl(bonus,true));}
 }
-// 번호를 클립보드로 복사 (file:// 대비 fallback 포함)
-function copyNums(nums,btn){
-  const txt=nums.join(', ');
-  const done=()=>{if(btn){const o=btn.dataset.label||btn.textContent;btn.dataset.label=o;btn.textContent='✅ 복사됨';setTimeout(()=>btn.textContent=o,1200);}};
-  if(navigator.clipboard&&navigator.clipboard.writeText)
-    navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));
-  else fallbackCopy(txt,done);
-}
-function fallbackCopy(txt,cb){
-  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
-  document.body.appendChild(ta);ta.select();
-  try{document.execCommand('copy');}catch(e){}
-  document.body.removeChild(ta);cb&&cb();
-}
 // ---------- nav scroll-spy ----------
 (function(){
   const links=[...document.querySelectorAll('#nav a')];
@@ -239,6 +237,14 @@ function fallbackCopy(txt,cb){
   },{rootMargin:'-15% 0px -75% 0px'});
   links.forEach(a=>{const s=document.getElementById(a.getAttribute('href').slice(1));if(s)io.observe(s);});
 })();
+
+// ---------- 분석·시뮬 팝업 제어 ----------
+function openLab(){$('labModal').classList.add('open');document.body.style.overflow='hidden';}
+function closeLab(){$('labModal').classList.remove('open');document.body.style.overflow='';}
+$('openLab').addEventListener('click',openLab);
+$('labClose').addEventListener('click',closeLab);
+$('labModal').addEventListener('click',e=>{if(e.target===$('labModal'))closeLab();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLab();});
 
 // ---------- frequency ----------
 const freq=new Array(46).fill(0), bonusFreq=new Array(46).fill(0);
@@ -417,11 +423,11 @@ $('sendBtn').addEventListener('click',()=>{
     if(!valid(mine)){r.innerHTML='<span class="g0">1~45 사이 서로 다른 6개 번호를 입력하세요.</span>';return;}
     (mode==='anal'?renderAnalyze:renderSim)(mine,r);
   }
-  // 외부(생성기·추천)에서 번호 받아 통합 카드로
+  // 외부(생성기·추천)에서 번호 받아 팝업으로 열고 바로 실행
   window.useNums=function(nums){
     nums.slice(0,6).forEach((n,i)=>$('m'+i).value=n);
+    openLab();
     run();
-    document.getElementById('sec-lab').scrollIntoView({behavior:'smooth',block:'start'});
   };
   $('labSeg').addEventListener('click',e=>{if(!e.target.dataset.m)return;
     mode=e.target.dataset.m;
@@ -434,15 +440,6 @@ $('sendBtn').addEventListener('click',()=>{
   });
   $('runBtn').addEventListener('click',run);
   $('fillMine').addEventListener('click',()=>{const s=new Set();while(s.size<6)s.add(1+Math.floor(Math.random()*45));[...s].sort((a,b)=>a-b).forEach((n,i)=>$('m'+i).value=n);run();});
-  $('copyMine').addEventListener('click',()=>{const m=getMine();if(valid(m))copyNums(m,$('copyMine'));});
-  $('pasteMine').addEventListener('click',async()=>{
-    let text='';
-    try{ text=await navigator.clipboard.readText(); }
-    catch(e){ text=window.prompt('번호를 붙여넣으세요 (쉼표 구분):')||''; }
-    const nums=(text.match(/\d+/g)||[]).map(Number).filter(v=>v>=1&&v<=45);
-    if(nums.length<6){$('labRes').style.display='block';$('labRes').innerHTML='<span class="g0">붙여넣은 값에서 1~45 사이 번호 6개를 찾지 못했어요.</span>';return;}
-    useNums(nums);
-  });
 })();
 
 // ---------- 1등 닮은꼴 추천 ----------
