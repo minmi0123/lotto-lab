@@ -54,15 +54,16 @@
 
 ### 단계 체크리스트
 
-- [ ] 1. legacy/ 로 현재 앱 보존
-- [ ] 2. DATA 배열 → app/src/data/lottoData.js
-- [ ] 3. Vite+React 스캐폴딩(app/)
-- [ ] 4. usePoints + scoring 코어
-- [ ] 5. Header + SlotMachine (신규 동작)
-- [ ] 6. build 검증
-- [ ] 7. 기존 카드 컴포넌트 이전(빈도·차트·핫콜드·통계·생성기·추천·명예의전당·분석시뮬)
-- [ ] 8. 루트 승격 + GitHub Pages dist 배포 전환
+- [x] 1. legacy/ 로 현재 앱 보존
+- [x] 2. DATA 배열 → app/src/data/lottoData.js
+- [x] 3. Vite+React 스캐폴딩(app/)
+- [x] 4. usePoints + scoring 코어
+- [x] 5. Header + SlotMachine (신규 동작)
+- [x] 6. build 검증
+- [x] 7. 기존 카드 컴포넌트 이전(빈도·차트·핫콜드·통계·생성기·추천·명예의전당·분석시뮬)
+- [x] 8. GitHub Pages를 Actions(app/ 빌드) 배포로 전환 → https://minmi0123.github.io/lotto-lab/ 라이브
 - [ ] 9. (추후) 광고 충전(C), 서버/DB 랭킹(2단계)
+- [ ] 10. (선택) 밸런스 튜닝, nav 스크롤-스파이, 슬롯→분석 연동
 
 ---
 
