@@ -49,7 +49,7 @@ function generate(strategy) {
   return { nums, meta }
 }
 
-export default function Generator({ onAnalyze }) {
+export default function Generator({ onAnalyze, onSlot }) {
   const [strategy, setStrategy] = useState('random')
   const [result, setResult] = useState(null) // { nums, meta }
 
@@ -71,6 +71,7 @@ export default function Generator({ onAnalyze }) {
       </div>
       <div className="row">
         <button className="primary" onClick={onGen}>🎲 번호 뽑기</button>
+        {result && <button onClick={() => onSlot(result.nums)}>🎰 이 번호로 슬롯</button>}
         {result && <button onClick={() => onAnalyze(result.nums)}>🎯 분석·시뮬 하기</button>}
         <span className="mini">{desc}</span>
       </div>

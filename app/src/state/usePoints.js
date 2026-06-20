@@ -9,6 +9,7 @@ const fresh = () => ({
   spins: 0,
   wins: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, // 등수별 당첨 횟수
   biggest: 0, // 단일 스핀 최대 획득
+  myNumbers: null, // 슬롯에 고정한 내 번호 (생성기·추천에서 지정)
 })
 
 function load() {
@@ -66,7 +67,15 @@ export function usePoints() {
     update((s) => ({ ...s, balance: s.balance + REFILL_POINTS }))
   }, [update])
 
+  // 슬롯에 고정할 내 번호 지정/해제 (생성기·추천에서 호출)
+  const setMyNumbers = useCallback((nums) => {
+    update((s) => ({ ...s, myNumbers: nums ? [...nums].slice(0, 6) : null }))
+  }, [update])
+  const clearMyNumbers = useCallback(() => {
+    update((s) => ({ ...s, myNumbers: null }))
+  }, [update])
+
   const canSpin = state.balance >= SPIN_COST
 
-  return { ...state, canSpin, applySpin, refill }
+  return { ...state, canSpin, applySpin, refill, setMyNumbers, clearMyNumbers }
 }

@@ -82,6 +82,8 @@ button.primary:hover{filter:brightness(1.05);}
 /* ---------- segmented buttons ---------- */
 .seg{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
 .seg button.on{background:var(--accent2);border-color:var(--accent2);color:#fff;}
+.mini-btn{padding:4px 10px;font-size:12px;border-radius:8px;}
+a{color:var(--accent2);}
 
 /* ---------- form / result ---------- */
 select,input{background:var(--panel2);border:1px solid var(--line);color:var(--txt);

@@ -3,7 +3,7 @@ import Ball from './Ball.jsx'
 import { ranked } from '../lib/stats.js'
 import { recommend } from '../lib/lucky.js'
 
-export default function LuckyPick({ onAnalyze }) {
+export default function LuckyPick({ onAnalyze, onSlot }) {
   const [list, setList] = useState(null)
   const [busy, setBusy] = useState(false)
 
@@ -43,7 +43,8 @@ export default function LuckyPick({ onAnalyze }) {
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <span className="tag">패턴 적합도 <b style={{ color: 'var(--accent)' }}>{c.fit}</b></span>
-                  <button onClick={() => onAnalyze(c.s)}>🎯 분석·시뮬</button>
+                  <button className="mini-btn" onClick={() => onSlot(c.s)}>🎰 슬롯</button>
+                  <button className="mini-btn" onClick={() => onAnalyze(c.s)}>🎯 분석·시뮬</button>
                 </div>
               </div>
               <div className="mini" style={{ marginTop: 8 }}>
