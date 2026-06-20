@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Ball from './Ball.jsx'
 import { DATA } from '../data/lottoData.js'
 import { freq } from '../lib/stats.js'
@@ -89,6 +89,7 @@ export default function Analyzer({ initialNums }) {
   const [span, setSpan] = useState(9999)
   const [show, setShow] = useState(false)
   const [err, setErr] = useState('')
+  const cardRef = useRef(null)
 
   useEffect(() => {
     if (initialNums) {
@@ -97,6 +98,8 @@ export default function Analyzer({ initialNums }) {
       setNums(filled)
       setShow(true)
       setErr('')
+      // 위쪽 생성기·추천에서 채워졌으면 분석기로 스크롤
+      cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }, [initialNums])
 
@@ -127,7 +130,7 @@ export default function Analyzer({ initialNums }) {
   const s = show && valid && mode === 'sim' ? computeSim(mine, weekly, span) : null
 
   return (
-    <div className="card full" id="sec-analyze">
+    <div className="card full" id="sec-analyze" ref={cardRef}>
       <h2>🎯 내 번호 분석 & 시뮬레이터 <small>한 세트로 둘 다</small></h2>
 
       <div className="row">
