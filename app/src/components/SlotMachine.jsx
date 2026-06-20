@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Ball from './Ball.jsx'
+import { usePointsCtx } from '../state/PointsContext.jsx'
 import { SPIN_COST, scoreDraw, randomDraw, randomNumbers } from '../lib/scoring.js'
 
-export default function SlotMachine({ balance, canSpin, applySpin, refill, spins, wins, best, biggest }) {
+export default function SlotMachine() {
+  const { balance, canSpin, applySpin, refill, spins, wins, best, biggest } = usePointsCtx()
   const [phase, setPhase] = useState('idle') // idle | spinning | done
   const [reel, setReel] = useState([1, 2, 3, 4, 5, 6])
   const [draw, setDraw] = useState(null)
@@ -13,6 +15,9 @@ export default function SlotMachine({ balance, canSpin, applySpin, refill, spins
     timers.current.forEach((t) => clearInterval(t) || clearTimeout(t))
     timers.current = []
   }
+
+  // 스핀 도중 페이지 이탈 시 타이머 정리 (setState 경고 방지)
+  useEffect(() => clearTimers, [])
 
   function spin() {
     if (!canSpin || phase === 'spinning') return

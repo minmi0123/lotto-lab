@@ -81,7 +81,8 @@ function computeSim(mine, weekly, span) {
   return { spend, payout, profit, roi, cnt, best, games, draws: draws.length }
 }
 
-export default function LabModal({ open, initialNums, onClose }) {
+// 분석·시뮬 본체 (페이지 카드). initialNums 가 오면 채우고 자동 실행.
+export default function Analyzer({ initialNums }) {
   const [nums, setNums] = useState(['', '', '', '', '', ''])
   const [mode, setMode] = useState('anal')
   const [weekly, setWeekly] = useState(5000)
@@ -89,26 +90,15 @@ export default function LabModal({ open, initialNums, onClose }) {
   const [show, setShow] = useState(false)
   const [err, setErr] = useState('')
 
-  // 외부에서 번호 받아 열릴 때 채우고 자동 실행
   useEffect(() => {
-    if (open && initialNums) {
+    if (initialNums) {
       const filled = ['', '', '', '', '', '']
       initialNums.slice(0, 6).forEach((n, i) => (filled[i] = String(n)))
       setNums(filled)
       setShow(true)
       setErr('')
     }
-  }, [open, initialNums])
-
-  // ESC 닫기
-  useEffect(() => {
-    if (!open) return
-    const h = (e) => e.key === 'Escape' && onClose()
-    document.addEventListener('keydown', h)
-    return () => document.removeEventListener('keydown', h)
-  }, [open, onClose])
-
-  if (!open) return null
+  }, [initialNums])
 
   const mine = nums.map((v) => parseInt(v, 10))
   const valid = mine.every((v) => v >= 1 && v <= 45) && new Set(mine).size === 6
@@ -137,72 +127,66 @@ export default function LabModal({ open, initialNums, onClose }) {
   const s = show && valid && mode === 'sim' ? computeSim(mine, weekly, span) : null
 
   return (
-    <div className="modal-bg open" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal">
-        <div className="card full">
-          <button className="close" onClick={onClose} title="닫기">✕</button>
-          <h2>🎯 내 번호 분석 & 시뮬레이터 <small>한 세트로 둘 다</small></h2>
+    <div className="card full" id="sec-analyze">
+      <h2>🎯 내 번호 분석 & 시뮬레이터 <small>한 세트로 둘 다</small></h2>
 
-          <div className="row">
-            {nums.map((v, i) => (
-              <input
-                key={i}
-                className="num-in"
-                type="number"
-                min="1"
-                max="45"
-                placeholder={String(i + 1)}
-                value={v}
-                onChange={(e) => setNum(i, e.target.value)}
-              />
-            ))}
-            <button onClick={fillRandom}>🎲 랜덤</button>
-          </div>
-
-          <div className="seg" style={{ marginTop: 12 }}>
-            <button className={mode === 'anal' ? 'on' : ''} onClick={() => setMode('anal')}>🔍 분석</button>
-            <button className={mode === 'sim' ? 'on' : ''} onClick={() => setMode('sim')}>💰 시뮬레이션</button>
-          </div>
-
-          {mode === 'sim' && (
-            <div className="row">
-              <label className="mini">주당 금액{' '}
-                <select value={weekly} onChange={(e) => setWeekly(+e.target.value)}>
-                  <option value={1000}>1,000원 (1게임)</option>
-                  <option value={5000}>5,000원 (5게임)</option>
-                  <option value={10000}>10,000원 (10게임)</option>
-                </select>
-              </label>
-              <label className="mini">기간{' '}
-                <select value={span} onChange={(e) => setSpan(+e.target.value)}>
-                  <option value={52}>최근 1년 (52회)</option>
-                  <option value={156}>최근 3년 (156회)</option>
-                  <option value={260}>최근 5년 (260회)</option>
-                  <option value={9999}>역대 전체</option>
-                </select>
-              </label>
-            </div>
-          )}
-
-          <div className="row" style={{ marginTop: 10 }}>
-            <button className="primary" onClick={run}>▶ 실행</button>
-            <span className="mini">
-              {mode === 'sim' ? '이 번호로 꾸준히 샀다면 수익을 계산합니다' : '역대 당첨 이력과 내 번호를 비교합니다'}
-            </span>
-          </div>
-
-          {err && <div className="res" style={{ marginTop: 14 }}><span className="g0">{err}</span></div>}
-
-          {a && <AnalyzeView mine={mine} a={a} />}
-          {s && <SimView mine={mine} s={s} />}
-
-          {mode === 'sim' && (
-            <div className="hint" style={{ marginTop: 8 }}>
-              매 회차 같은 번호로 (주당금액÷1,000)장씩 샀다고 가정합니다. 1·2등은 회차별 실제값, 3등 150만·4등 5만·5등 5천원은 통상 근사값이에요.
-            </div>
-          )}
-        </div>
+      <div className="row">
+        {nums.map((v, i) => (
+          <input
+            key={i}
+            className="num-in"
+            type="number"
+            min="1"
+            max="45"
+            placeholder={String(i + 1)}
+            value={v}
+            onChange={(e) => setNum(i, e.target.value)}
+          />
+        ))}
+        <button onClick={fillRandom}>🎲 랜덤</button>
       </div>
+
+      <div className="seg" style={{ marginTop: 12 }}>
+        <button className={mode === 'anal' ? 'on' : ''} onClick={() => setMode('anal')}>🔍 분석</button>
+        <button className={mode === 'sim' ? 'on' : ''} onClick={() => setMode('sim')}>💰 시뮬레이션</button>
+      </div>
+
+      {mode === 'sim' && (
+        <div className="row">
+          <label className="mini">주당 금액{' '}
+            <select value={weekly} onChange={(e) => setWeekly(+e.target.value)}>
+              <option value={1000}>1,000원 (1게임)</option>
+              <option value={5000}>5,000원 (5게임)</option>
+              <option value={10000}>10,000원 (10게임)</option>
+            </select>
+          </label>
+          <label className="mini">기간{' '}
+            <select value={span} onChange={(e) => setSpan(+e.target.value)}>
+              <option value={52}>최근 1년 (52회)</option>
+              <option value={156}>최근 3년 (156회)</option>
+              <option value={260}>최근 5년 (260회)</option>
+              <option value={9999}>역대 전체</option>
+            </select>
+          </label>
+        </div>
+      )}
+
+      <div className="row" style={{ marginTop: 10 }}>
+        <button className="primary" onClick={run}>▶ 실행</button>
+        <span className="mini">
+          {mode === 'sim' ? '이 번호로 꾸준히 샀다면 수익을 계산합니다' : '역대 당첨 이력과 내 번호를 비교합니다'}
+        </span>
+      </div>
+
+      {err && <div className="res"><span className="g0">{err}</span></div>}
+      {a && <AnalyzeView mine={mine} a={a} />}
+      {s && <SimView mine={mine} s={s} />}
+
+      {mode === 'sim' && (
+        <div className="hint" style={{ marginTop: 8 }}>
+          매 회차 같은 번호로 (주당금액÷1,000)장씩 샀다고 가정합니다. 1·2등은 회차별 실제값, 3등 150만·4등 5만·5등 5천원은 통상 근사값이에요.
+        </div>
+      )}
     </div>
   )
 }
@@ -210,7 +194,7 @@ export default function LabModal({ open, initialNums, onClose }) {
 function AnalyzeView({ mine, a }) {
   const mset = new Set(mine)
   return (
-    <div className="res" style={{ marginTop: 14 }}>
+    <div className="res">
       {a.best.grade < 99 ? (
         <div className={`grade g${a.best.grade}`}>
           🎉 역대 최고 {gName[a.best.grade]} 적중 이력! <span className="mini">({a.best.round}회차 기준)</span>
@@ -250,7 +234,7 @@ function AnalyzeView({ mine, a }) {
 function SimView({ mine, s }) {
   const pc = s.profit >= 0 ? 'g3' : 'g0'
   return (
-    <div className="res" style={{ marginTop: 14 }}>
+    <div className="res">
       <div className={`grade ${pc}`}>
         {s.profit >= 0 ? '📈 +' : '📉 '}
         {won(s.profit)}원 {s.profit >= 0 ? '수익!' : '손해'}

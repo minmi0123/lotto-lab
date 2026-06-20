@@ -77,6 +77,7 @@ button.primary:hover{filter:brightness(1.05);}
   border:1px solid var(--line);border-radius:999px;background:var(--panel2);
   transition:.15s;white-space:nowrap;cursor:pointer;}
 .nav a:hover{color:var(--txt);border-color:var(--accent2);}
+.nav a.active{background:var(--accent2);color:#fff;border-color:var(--accent2);}
 
 /* ---------- segmented buttons ---------- */
 .seg{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
