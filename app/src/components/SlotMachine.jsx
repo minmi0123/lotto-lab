@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Ball from './Ball.jsx'
 import { usePointsCtx } from '../state/PointsContext.jsx'
-import { SPIN_COST, scoreDraw, randomDraw, randomNumbers } from '../lib/scoring.js'
+import { SPIN_COST, rollSpin, randomNumbers } from '../lib/scoring.js'
 
 export default function SlotMachine() {
   const { balance, canSpin, applySpin, refill, spins, wins, best, biggest, myNumbers, clearMyNumbers } =
@@ -31,8 +31,7 @@ export default function SlotMachine() {
     if (!canSpin || phase === 'spinning') return
     clearTimers()
     const mine = useMine ? myNumbers : randomNumbers()
-    const d = randomDraw()
-    const res = scoreDraw(mine, d)
+    const res = rollSpin(mine) // 확률표로 결과 추첨 + draw 구성
 
     setPhase('spinning')
     setDraw(null)
@@ -45,7 +44,7 @@ export default function SlotMachine() {
     const stop = setTimeout(() => {
       clearInterval(iv)
       setReel(mine)
-      setDraw(d)
+      setDraw(res.draw)
       setResult(res)
       setPhase('done')
       applySpin(res) // 비용 차감 + 보상 정산
@@ -103,7 +102,7 @@ export default function SlotMachine() {
 
       {draw && (
         <>
-          <div className="vs">▼ {draw.round}회차 당첨번호와 비교 ▼</div>
+          <div className="vs">▼ 추첨 결과 ▼</div>
           <div className="reel draw">
             {draw.n.map((n, i) => (
               <Ball key={i} n={n} className={mset.has(n) ? 'hit' : ''} />
@@ -153,8 +152,8 @@ export default function SlotMachine() {
       </div>
 
       <div className="hint">
-        ⚠️ 포인트는 재미용 가상 점수예요. 매 스핀 역대 1228회차 중 무작위 1회를 뽑아 그 회차 당첨번호와 비교합니다.
-        {' '}로또는 대칭이라 번호를 고정해도 기대값은 동일해요(몰입용 😉).
+        ⚠️ 포인트는 재미용 가상 점수예요. 슬롯은 게임용 확률표(1등 1/8,000 등)로 추첨하며 실제 로또 확률과는 달라요.
+        {' '}스핀당 평균 약 -0.9pt로 천천히 닳고, 가끔 잭팟이 터집니다 🎰
       </div>
     </div>
   )
