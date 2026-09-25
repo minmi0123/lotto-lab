@@ -1,5 +1,6 @@
 import Icon from './Icon.jsx'
-import { byRegion, within2, outliers, storeHist, multi, totals, top, online, meta } from '../lib/regionStats.js'
+import TileMap, { label } from './TileMap.jsx'
+import { regions, byRegion, within2, outliers, storeHist, multi, totals, top, online, meta } from '../lib/regionStats.js'
 
 // forest plot. 가로축은 "판매점 수에 비례했을 때의 기대 배출" 대비 비율이라
 // 1.0 이 기준선이고, 가로 막대는 무작위로도 생기는 변동폭(±2σ)이다.
@@ -18,6 +19,37 @@ const W = 600,
   TOP_PAD = 30
 
 const rows = [...byRegion].sort((a, b) => b.ratio - a.ratio)
+
+// 타일 지도용. byRegion 은 REGIONS 와 같은 순서라 그대로 뽑아 쓴다.
+const winVals = byRegion.map((r) => r.wins)
+const shopVals = byRegion.map((r) => r.shops)
+// 두 지도가 실제로 얼마나 닮았는지 — 순위 상관(스피어만)으로 재서 글로도 말해준다.
+// 배출 건수엔 동점이 많다(20건이 3곳, 23건이 2곳). 동점에 임의 순위를 주면
+// 값이 흔들리므로 평균 순위를 매기고, 그 위에서 피어슨을 구한다.
+const spearman = (() => {
+  const rank = (vals) => {
+    const idx = vals.map((v, i) => [v, i]).sort((a, b) => b[0] - a[0])
+    const out = new Array(vals.length)
+    let i = 0
+    while (i < idx.length) {
+      let j = i
+      while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++
+      const avg = (i + j) / 2 + 1
+      for (let k = i; k <= j; k++) out[idx[k][1]] = avg
+      i = j + 1
+    }
+    return out
+  }
+  const a = rank(winVals),
+    b = rank(shopVals)
+  const mean = (x) => x.reduce((p, c) => p + c, 0) / x.length
+  const ma = mean(a),
+    mb = mean(b)
+  const cov = a.reduce((s, v, i) => s + (v - ma) * (b[i] - mb), 0)
+  const sa = Math.sqrt(a.reduce((s, v) => s + (v - ma) ** 2, 0))
+  const sb = Math.sqrt(b.reduce((s, v) => s + (v - mb) ** 2, 0))
+  return sa && sb ? cov / (sa * sb) : 0
+})()
 // ±2σ 를 비율 단위로. 배출이 적은 지역일수록 넓다
 const half = (r) => (r.exp ? 2 / Math.sqrt(r.exp) : 0)
 
@@ -38,6 +70,21 @@ export default function RegionStats() {
   return (
     <div className="card full" id="sec-region">
       <h2><Icon name="map" />지역별 1등 배출<small>판매점 수로 보정해서</small></h2>
+
+      {/* 1단계 — 지도 두 장을 나란히. "많이 나온 곳"과 "판매점이 많은 곳"이
+          같은 모양이라는 걸 보고 나면 아래 forest plot 이 설명이 된다.
+          면적 왜곡을 없애려고 실제 지도 대신 같은 크기 타일을 쓴다. */}
+      <div className="maps">
+        <TileMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" />
+        <TileMap title="로또 판매점 수" regions={regions} values={shopVals} unit="곳" />
+      </div>
+
+      <div className="hint" style={{ marginTop: 12 }}>
+        <b>두 지도가 거의 같은 모양이다.</b> 1등이 많이 나온 곳(경기 {byRegion[1].wins}건, 서울 {byRegion[0].wins}건)은
+        판매점도 가장 많은 곳(경기 {byRegion[1].shops.toLocaleString()}곳, 서울 {byRegion[0].shops.toLocaleString()}곳)이다.
+        16개 시도의 배출 순위와 판매점 순위는 {spearman.toFixed(2)}만큼 함께 움직인다(1.00이면 완전히 같은 순서).
+        많이 파니까 많이 나오는 것이지, 그 지역의 운이 좋은 게 아니다. 아래는 판매점 수로 나눠서 다시 본 것이다.
+      </div>
 
       <svg
         viewBox={`0 0 ${W} ${H}`}
@@ -71,7 +118,7 @@ export default function RegionStats() {
           return (
             <g key={r.name}>
               <text className="noise-tick" x={LABEL} y={y + 3} textAnchor="end" fill={odd ? HI : undefined}>
-                {r.name}
+                {label(r.name)}
               </text>
               <line x1={sx(Math.max(lo, r.ratio - h))} y1={y} x2={sx(r.ratio + h)} y2={y} stroke={c} strokeWidth="1.5" opacity={0.55} />
               {/* 배출이 적은 지역은 아래쪽 끝이 0 밑으로 내려가 잘린다. 그때는 끝 표시를 생략 */}
@@ -103,7 +150,7 @@ export default function RegionStats() {
           </>
         ) : (
           <>
-            기대 범위를 벗어난 지역은 <b>{outliers.map((r) => r.name).join(', ')}</b>. 다만 16개
+            기대 범위를 벗어난 지역은 <b>{outliers.map((r) => label(r.name)).join(', ')}</b>. 다만 16개
             지역을 한꺼번에 재면 그중 0.7개쯤은 무작위로도 ±2σ 밖으로 나간다.
           </>
         )}
