@@ -1,6 +1,6 @@
 import Icon from './Icon.jsx'
-import TileMap, { label } from './TileMap.jsx'
-import { regions, byRegion, within2, outliers, storeHist, multi, totals, top, online, meta } from '../lib/regionStats.js'
+import KoreaMap from './KoreaMap.jsx'
+import { regions, label, byRegion, within2, outliers, storeHist, multi, totals, top, online, meta } from '../lib/regionStats.js'
 
 // forest plot. 가로축은 "판매점 수에 비례했을 때의 기대 배출" 대비 비율이라
 // 1.0 이 기준선이고, 가로 막대는 무작위로도 생기는 변동폭(±2σ)이다.
@@ -20,7 +20,7 @@ const W = 600,
 
 const rows = [...byRegion].sort((a, b) => b.ratio - a.ratio)
 
-// 타일 지도용. byRegion 은 REGIONS 와 같은 순서라 그대로 뽑아 쓴다.
+// 지도용. byRegion 은 REGIONS 와 같은 순서라 그대로 뽑아 쓴다.
 const winVals = byRegion.map((r) => r.wins)
 const shopVals = byRegion.map((r) => r.shops)
 // 두 지도가 실제로 얼마나 닮았는지 — 순위 상관(스피어만)으로 재서 글로도 말해준다.
@@ -73,10 +73,10 @@ export default function RegionStats() {
 
       {/* 1단계 — 지도 두 장을 나란히. "많이 나온 곳"과 "판매점이 많은 곳"이
           같은 모양이라는 걸 보고 나면 아래 forest plot 이 설명이 된다.
-          면적 왜곡을 없애려고 실제 지도 대신 같은 크기 타일을 쓴다. */}
+          땅은 값으로 칠하지 않고 원 넓이로만 말한다 (KoreaMap 주석 참고). */}
       <div className="maps">
-        <TileMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" />
-        <TileMap title="로또 판매점 수" regions={regions} values={shopVals} unit="곳" />
+        <KoreaMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" />
+        <KoreaMap title="로또 판매점 수" regions={regions} values={shopVals} unit="곳" />
       </div>
 
       <div className="hint" style={{ marginTop: 12 }}>
@@ -84,6 +84,8 @@ export default function RegionStats() {
         판매점도 가장 많은 곳(경기 {byRegion[1].shops.toLocaleString()}곳, 서울 {byRegion[0].shops.toLocaleString()}곳)이다.
         16개 시도의 배출 순위와 판매점 순위는 {spearman.toFixed(2)}만큼 함께 움직인다(1.00이면 완전히 같은 순서).
         많이 파니까 많이 나오는 것이지, 그 지역의 운이 좋은 게 아니다. 아래는 판매점 수로 나눠서 다시 본 것이다.
+        {' '}<span className="mini">(원 넓이가 값이다. 제주는 지면을 아끼려고 실제보다 위로 당겨 그렸고,
+        울릉도·독도 등 작은 섬은 생략했다. 전남과 광주는 원본이 통합 표기라 한 덩어리다.)</span>
       </div>
 
       <svg
@@ -207,7 +209,9 @@ export default function RegionStats() {
         <a href="https://www.data.go.kr/data/15086355/fileData.do" target="_blank" rel="noreferrer">복권판매점 목록</a> (기획예산처, 이용허락범위 제한 없음).
         원본이 <b>1등 &lsquo;자동 선택&rsquo;만</b> 담고 있어 수동 1등은 빠져 있고, 최근 1년치이며 연 1회 갱신된다
         (내려받은 날 {meta.asof}). 인터넷 구매 {online}건은 판매점이 아닌데 동행복권 소재지인
-        서울 서초구로 기록돼 지역 통계에서 뺐다.
+        서울 서초구로 기록돼 지역 통계에서 뺐다. 지도의 시도 경계는{' '}
+        <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noreferrer">Natural Earth</a>
+        {' '}(퍼블릭 도메인).
       </div>
     </div>
   )

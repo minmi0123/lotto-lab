@@ -238,16 +238,22 @@ a:hover{color:var(--primary-active);}
 .slot .jackpot{animation:jp .6s ease infinite alternate;}
 @keyframes jp{from{opacity:.75;}to{opacity:1;}}
 
-/* ---------- 타일 카토그램 ---------- */
+/* ---------- 시도 지도 ---------- */
 .maps{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:4px;}
-.tilemap{margin:0;}
-.tilemap svg{width:100%;height:auto;display:block;overflow:visible;}
+.koreamap{margin:0;}
+/* 자식 선택자로 지도 svg 만. 범례 svg 까지 폭 100% 가 되면 안 된다 */
+.koreamap > svg{width:100%;height:auto;display:block;}
 .map-title{
   font-size:12px;font-weight:600;letter-spacing:1.5px;line-height:1.4;
   text-transform:uppercase;color:var(--muted);margin:0 0 10px;
 }
-.tile-name{font-size:11px;font-weight:500;}
-.tile-val{font-size:17px;font-weight:700;letter-spacing:-.3px;}
+.map-foot{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-top:8px;}
+.map-legend{width:170px;height:auto;flex:none;display:block;}
+.map-legend-t{fill:var(--muted);font-size:12px;}
+.map-top{list-style:none;margin:0;padding:0;font-size:13px;color:var(--muted);}
+.map-top li{display:flex;align-items:center;gap:7px;padding:2px 0;}
+.map-top b{color:var(--body-strong);font-weight:600;font-variant-numeric:tabular-nums;}
+.map-top .rank{width:19px;height:19px;font-size:11px;}
 
 /* ---------- 착시 코너 / forest plot ---------- */
 .noise{width:100%;height:auto;display:block;margin:4px 0 8px;overflow:visible;}

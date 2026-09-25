@@ -5,6 +5,11 @@ import { REGIONS, WINS, SHOPS, ONLINE, TOP, HIST, META } from '../data/storeData
 // 무작위로도 생기는 변동폭 안에 있는지를 본다. 핫/콜드를 ±2σ 로 재는 것과 같은 방식.
 
 export const regions = REGIONS
+
+// 원본 판매점 목록이 전남과 광주를 통합 표기로 주기 때문에 데이터가 한 덩어리다.
+// 화면에 내보낼 때만 읽기 좋게 고친다.
+const LABELS = { 전남광주: '전남·광주' }
+export const label = (name) => LABELS[name] || name
 export const meta = META
 export const online = ONLINE
 export const top = TOP
