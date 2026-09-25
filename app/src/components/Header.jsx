@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import Icon from './Icon.jsx'
 
 // 포인트 표시 + 변동 시 플래시 애니메이션
 export default function Header({ balance }) {
@@ -16,13 +17,14 @@ export default function Header({ balance }) {
 
   return (
     <div className="ptbar">
-      <div>
-        <span className={`pt ${flash ? 'pt-flash' : ''}`} style={{ display: 'inline-block' }}>
-          {balance.toLocaleString()}
-          <small>pt</small>
-        </span>
-      </div>
-      <span className="mini">🎰 스핀을 돌려 포인트를 불려보세요</span>
+      <span className={`pt ${flash ? 'pt-flash' : ''}`} style={{ display: 'inline-block' }}>
+        {balance.toLocaleString()}
+        <small>pt</small>
+      </span>
+      <span className="note">
+        <Icon name="slot" size={14} />
+        스핀을 돌려 포인트를 불려보세요
+      </span>
     </div>
   )
 }

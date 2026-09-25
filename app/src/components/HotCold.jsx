@@ -1,11 +1,17 @@
 import Ball from './Ball.jsx'
+import Icon from './Icon.jsx'
 import { ranked, freq, freqMean, freqSd, splitHalf, totalRounds } from '../lib/stats.js'
 
 // emphasis 형태: 강조 1색 + 맥락 회색.
 // 핫/콜드는 '축 위치'(왼쪽 끝=콜드, 오른쪽 끝=핫)가 이미 구분하므로 색으로 또 나누지 않는다.
 // 빨강/파랑을 쓰면 바로 아래 로또 공 색(번호대 의미)과 충돌해 같은 카드에서 색이 두 뜻을 갖게 됨.
-const HI = '#ffd23f' // --accent, 앱 공통 강조색 (vs 맥락색 ΔE 34.3 정상 / 26.0 tritan)
-const CTX = '#7d86b8'
+// 강조는 브랜드 노랑(유채색), 맥락은 무채색 회색 — 명도와 채도가 함께 달라 색각이상에서도 갈린다.
+const HI = '#faff69' // --primary
+const CTX = '#888888' // --muted
+const BAND = '#ffffff' // 기대 변동폭 띠는 무채색으로. 두 번째 브랜드 컬러를 만들지 않는다
+const AXIS = '#3a3a3a' // --hairline-strong
+const MEAN = '#5a5a5a' // --muted-soft
+const CARD = '#1a1a1a' // --surface-card
 
 const W = 600,
   H = 112,
@@ -50,25 +56,25 @@ const gap = Math.max(...freq.slice(1)) - Math.min(...freq.slice(1))
 export default function HotCold() {
   return (
     <div className="card full" id="sec-hotcold">
-      <h2>🎭 착시 코너 <small>핫·콜드 넘버, 진짜 신호일까?</small></h2>
+      <h2><Icon name="eye" />착시 코너<small>핫·콜드 넘버, 진짜 신호일까?</small></h2>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="noise" role="img"
         aria-label={`45개 번호의 출현 횟수 분포. 평균 ${freqMean.toFixed(1)}회, 무작위 기대 변동폭 1σ ±${freqSd.toFixed(1)}회. 최다 ${Math.max(...freq.slice(1))}회, 최소 ${Math.min(...freq.slice(1))}회로 ${within2}/45개가 ±2σ 안에 있음.`}>
         {/* 무작위로 뽑아도 생기는 변동폭. 바깥 띠 95%(±2σ), 안쪽 띠 68%(±1σ) */}
         <rect x={sx(freqMean - 2 * freqSd)} y={18} width={sx(freqMean + 2 * freqSd) - sx(freqMean - 2 * freqSd)}
-          height={axisY - 18} rx={4} fill="#5b8cff" opacity={0.09} />
+          height={axisY - 18} rx={4} fill={BAND} opacity={0.05} />
         <rect x={sx(freqMean - freqSd)} y={18} width={sx(freqMean + freqSd) - sx(freqMean - freqSd)}
-          height={axisY - 18} rx={4} fill="#5b8cff" opacity={0.13} />
+          height={axisY - 18} rx={4} fill={BAND} opacity={0.09} />
         <line x1={sx(freqMean)} y1={18} x2={sx(freqMean)} y2={axisY}
-          stroke="#9aa3d4" strokeWidth={1} strokeDasharray="3 3" opacity={0.7} />
+          stroke={MEAN} strokeWidth={1} strokeDasharray="3 3" />
 
         {/* 핫·콜드는 색이 아니라 '축의 양 끝'이라는 사실 자체로 구분 */}
         <text x={sx(freqMean)} y={12} textAnchor="middle" className="noise-cap">평균 {freqMean.toFixed(1)}회</text>
-        <text x={padX} y={12} textAnchor="start" className="noise-cap">❄️ 콜드 Bottom6</text>
-        <text x={W - padX} y={12} textAnchor="end" className="noise-cap">🔥 핫 Top6</text>
+        <text x={padX} y={12} textAnchor="start" className="noise-cap">콜드 Bottom6</text>
+        <text x={W - padX} y={12} textAnchor="end" className="noise-cap">핫 Top6</text>
 
         {/* 축 */}
-        <line x1={padX} y1={axisY} x2={W - padX} y2={axisY} stroke="#2e3766" strokeWidth={1} />
+        <line x1={padX} y1={axisY} x2={W - padX} y2={axisY} stroke={AXIS} strokeWidth={1} />
         {ticks.map((t) => (
           <text key={t} x={sx(t)} y={axisY + 13} textAnchor="middle" className="noise-tick">{t}</text>
         ))}
@@ -79,51 +85,55 @@ export default function HotCold() {
           <circle key={d.n} cx={d.x} cy={d.y}
             r={d.edge ? 5 : 2.6}
             fill={d.edge ? HI : CTX}
-            opacity={d.edge ? 1 : 0.45}
-            stroke={d.edge ? '#11163a' : 'none'} strokeWidth={2}>
+            opacity={d.edge ? 1 : 0.5}
+            stroke={d.edge ? CARD : 'none'} strokeWidth={2}>
             <title>{d.n}번 · {freq[d.n]}회</title>
           </circle>
         ))}
       </svg>
 
-      <div className="mini" style={{ textAlign: 'center', marginTop: -2 }}>
-        <span style={{ color: HI }}>●</span> 핫·콜드 12개(양 끝) ·{' '}
-        <span style={{ color: CTX }}>●</span> 나머지 33개 · 파란 띠 = 무작위로 뽑아도 생기는 변동폭
-        (진한 쪽 68%, 연한 쪽 95%)
+      <div className="legend">
+        <i style={{ background: HI }} /> 핫·콜드 12개(양 끝)
+        <span style={{ color: 'var(--muted-soft)' }}>·</span>
+        <i style={{ background: CTX }} /> 나머지 33개
+        <span style={{ color: 'var(--muted-soft)' }}>·</span>
+        밝은 띠 = 무작위로 뽑아도 생기는 변동폭 (진한 쪽 68%, 연한 쪽 95%)
       </div>
 
-      <h2 style={{ marginTop: 18 }}>🔥 핫넘버 <small>최다 출현 Top 6</small></h2>
+      <h2 style={{ marginTop: 24 }}><Icon name="flame" />핫넘버<small>최다 출현 Top 6</small></h2>
       <div className="balls">
         {hot.map((n) => (
           <span className="hc-item" key={n}><Ball n={n} /><span className="mini">{freq[n]}회</span></span>
         ))}
       </div>
-      <h2 style={{ marginTop: 14 }}>❄️ 콜드넘버 <small>최소 출현 Bottom 6</small></h2>
+      <h2 style={{ marginTop: 20 }}><Icon name="snow" />콜드넘버<small>최소 출현 Bottom 6</small></h2>
       <div className="balls">
         {cold.map((n) => (
           <span className="hc-item" key={n}><Ball n={n} /><span className="mini">{freq[n]}회</span></span>
         ))}
       </div>
 
-      <div className="stat" style={{ marginTop: 16 }}>
-        <span>최다 − 최소 격차</span><b>{gap}회</b>
-      </div>
-      <div className="stat">
-        <span>무작위로 뽑아도 생기는 변동폭</span><b>±{freqSd.toFixed(1)}회</b>
-      </div>
-      <div className="stat">
-        <span>95% 기대 범위(±2σ) 안</span><b>{within2}/45개 (기대 {expect2}개)</b>
-      </div>
-      <div className="stat">
-        <span>전반 핫 Top6 → 후반 평균</span>
-        <b style={{ color: 'var(--bad)' }}>{splitHalf.hotLateRank}위</b>
-      </div>
-      <div className="stat">
-        <span>전반 콜드 Bottom6 → 후반 평균</span>
-        <b style={{ color: 'var(--good)' }}>{splitHalf.coldLateRank}위</b>
-      </div>
-      <div className="stat">
-        <span>무작위라면 나와야 할 값</span><b>둘 다 {splitHalf.chance}위</b>
+      <div style={{ marginTop: 20 }}>
+        <div className="stat">
+          <span>최다 − 최소 격차</span><b>{gap}회</b>
+        </div>
+        <div className="stat">
+          <span>무작위로 뽑아도 생기는 변동폭</span><b>±{freqSd.toFixed(1)}회</b>
+        </div>
+        <div className="stat">
+          <span>95% 기대 범위(±2σ) 안</span><b>{within2}/45개 (기대 {expect2}개)</b>
+        </div>
+        <div className="stat">
+          <span>전반 핫 Top6 → 후반 평균</span>
+          <b className="neg">{splitHalf.hotLateRank}위</b>
+        </div>
+        <div className="stat">
+          <span>전반 콜드 Bottom6 → 후반 평균</span>
+          <b className="pos">{splitHalf.coldLateRank}위</b>
+        </div>
+        <div className="stat">
+          <span>무작위라면 나와야 할 값</span><b>둘 다 {splitHalf.chance}위</b>
+        </div>
       </div>
 
       <div className="hint">
@@ -132,7 +142,7 @@ export default function HotCold() {
         지금의 {gap}회 격차는 잡음이에요.
         {' '}실제로 전반 {splitHalf.half}회의 핫넘버는 후반에 평균 {splitHalf.hotLateRank}위로 <b>오히려 내려갔고</b>,
         콜드넘버가 {splitHalf.coldLateRank}위로 올라왔습니다. 즉 <b>과거 출현 빈도에는 예측력이 없습니다.</b>
-        {' '}그래서 이 앱은 핫/콜드로 번호를 밀어주지 않아요 😉
+        {' '}그래서 이 앱은 핫/콜드로 번호를 밀어주지 않아요.
       </div>
     </div>
   )

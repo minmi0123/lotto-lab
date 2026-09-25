@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
+import Icon from './Icon.jsx'
 import { freq, bonusFreq, maxC, ballDetail } from '../lib/stats.js'
 import { ballClass } from '../lib/scoring.js'
 
@@ -22,13 +23,13 @@ export default function FreqChart() {
       ctx.fillStyle = colors[ballClass(n)]
       ctx.fillRect(x + 1, y, bw - 2, h)
       if (n % 5 === 0 || n === 1) {
-        ctx.fillStyle = '#9aa3d4'
-        ctx.font = '10px sans-serif'
+        ctx.fillStyle = '#888888' // --muted
+        ctx.font = '10px Inter, sans-serif'
         ctx.textAlign = 'center'
         ctx.fillText(n, x + bw / 2, H - pad + 12)
       }
     }
-    ctx.strokeStyle = '#2e3766'
+    ctx.strokeStyle = '#3a3a3a' // --hairline-strong
     ctx.beginPath()
     ctx.moveTo(pad, H - pad)
     ctx.lineTo(W - pad, H - pad)
@@ -48,7 +49,7 @@ export default function FreqChart() {
 
   return (
     <div className="card full" id="sec-freq">
-      <h2>📊 번호별 출현 빈도 <small>1~45번 역대 누적</small></h2>
+      <h2><Icon name="chart" />번호별 출현 빈도<small>1~45번 역대 누적</small></h2>
       <canvas
         ref={cvRef}
         width={W}
@@ -60,7 +61,7 @@ export default function FreqChart() {
         막대를 클릭하면 해당 번호의 상세 통계를 볼 수 있어요. 색은 실제 로또 공 색상 기준(노랑1-10 / 파랑11-20 / 빨강21-30 / 회색31-40 / 초록41-45).
       </div>
       {sel != null && (
-        <div className="result" style={{ marginTop: 14, padding: 14, borderRadius: 12, background: '#11163a', border: '1px solid var(--line)' }}>
+        <div className="res">
           <div className="row" style={{ gap: 14 }}>
             <span className={`ball ${ballClass(sel)}`}>{sel}</span>
             <div>

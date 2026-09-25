@@ -11,9 +11,9 @@ export const REFILL_POINTS = 100 // 파산 시 무료 충전 (버튼 한 번, �
 // ---------- 슬롯 확률표 (게임용 보정, 실제 로또 확률 아님) ----------
 // prob 의 합 미만이면 꽝. reward 는 pt. EV ≈ 9.1 / 비용 10 → 스핀당 약 -0.9pt.
 export const SLOT_TABLE = [
-  { grade: 1, match: 6, bonus: false, reward: 20000, prob: 1 / 8000, label: '🎰 1등 잭팟!!!' },
-  { grade: 2, match: 5, bonus: true, reward: 3000, prob: 1 / 2000, label: '🥈 2등! (5개+보너스)' },
-  { grade: 3, match: 5, bonus: false, reward: 900, prob: 1 / 600, label: '🥉 3등! (5개 일치)' },
+  { grade: 1, match: 6, bonus: false, reward: 20000, prob: 1 / 8000, label: '1등 잭팟' },
+  { grade: 2, match: 5, bonus: true, reward: 3000, prob: 1 / 2000, label: '2등 (5개+보너스)' },
+  { grade: 3, match: 5, bonus: false, reward: 900, prob: 1 / 600, label: '3등 (5개 일치)' },
   { grade: 4, match: 4, bonus: false, reward: 150, prob: 1 / 120, label: '4등 (4개 일치)' },
   { grade: 5, match: 3, bonus: false, reward: 25, prob: 1 / 18, label: '5등 (3개 일치)' },
   { grade: 6, match: 2, bonus: false, reward: 5, prob: 1 / 5, label: '아쉽! (2개 일치)' },
@@ -60,7 +60,7 @@ export function rollSpin(mine) {
   if (!tier) {
     // 꽝 (0~1개 일치 연출)
     const m = Math.random() < 0.5 ? 1 : 0
-    return { match: m, bonus: false, grade: 0, reward: 0, label: '꽝 😢', draw: buildDraw(mine, m, false) }
+    return { match: m, bonus: false, grade: 0, reward: 0, label: '꽝', draw: buildDraw(mine, m, false) }
   }
   return {
     match: tier.match,

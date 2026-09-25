@@ -1,9 +1,10 @@
+import Icon from './Icon.jsx'
 import { misc } from '../lib/stats.js'
 
 export default function MiscStats() {
   return (
-    <div className="card" id="sec-stats">
-      <h2>🧮 한눈에 보는 통계</h2>
+    <div className="card full" id="sec-stats">
+      <h2><Icon name="sigma" />한눈에 보는 통계</h2>
       <div className="stat"><span>당첨번호 합계 평균</span><b>{misc.avgSum}</b></div>
       <div className="stat"><span>홀수 비율</span><b>{misc.oddPct}%</b></div>
       <div className="stat"><span>연속번호 포함 회차</span><b>{misc.consecPct}%</b></div>

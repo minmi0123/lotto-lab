@@ -1,14 +1,15 @@
+import Icon from './Icon.jsx'
 import { byRegion, within2, outliers, storeHist, multi, totals, top, online, meta } from '../lib/regionStats.js'
 
 // forest plot. 가로축은 "판매점 수에 비례했을 때의 기대 배출" 대비 비율이라
 // 1.0 이 기준선이고, 가로 막대는 무작위로도 생기는 변동폭(±2σ)이다.
 // 막대가 1.0 을 가로지르면 그 지역은 '차이 없음'.
 //
-// 색은 HotCold 와 같은 규칙: 강조 1색 + 맥락 회색. 축 위치가 이미 크기를
+// 색은 HotCold 와 같은 규칙: 강조 1색(브랜드 노랑) + 맥락 무채색. 축 위치가 이미 크기를
 // 말하므로 색으로 또 나누지 않고, 기대 범위를 벗어난 지역에만 강조를 쓴다.
-const HI = '#ffd23f'
-const CTX = '#7d86b8'
-
+const HI = '#faff69' // --primary
+const CTX = '#888888' // --muted
+const REF = '#ffffff' // 기준선(1.0)은 무채색
 const W = 600,
   LABEL = 54,
   PLOT_L = 62,
@@ -36,9 +37,7 @@ const fmtExp = (v) => (v < 0.05 ? '0.01곳도 안 된다' : v < 1 ? `${v.toFixed
 export default function RegionStats() {
   return (
     <div className="card full" id="sec-region">
-      <h2>
-        🗺️ 지역별 1등 배출 <small>판매점 수로 보정해서</small>
-      </h2>
+      <h2><Icon name="map" />지역별 1등 배출<small>판매점 수로 보정해서</small></h2>
 
       <svg
         viewBox={`0 0 ${W} ${H}`}
@@ -51,9 +50,9 @@ export default function RegionStats() {
           y1={TOP_PAD - 8}
           x2={sx(1)}
           y2={TOP_PAD + rows.length * ROW - 4}
-          stroke="#5b8cff"
+          stroke={REF}
           strokeWidth="1.5"
-          opacity={0.5}
+          opacity={0.35}
         />
         <text className="noise-cap" x={sx(1)} y={TOP_PAD - 14} textAnchor="middle">
           판매점 수만큼
@@ -110,11 +109,13 @@ export default function RegionStats() {
         )}
       </div>
 
-      <h2 style={{ marginTop: 22 }}>
-        🏪 '명당'은 있을까 <small>판매점 한 곳이 여러 번 배출할 확률</small>
+      <h2 style={{ marginTop: 28 }}>
+        <Icon name="store" />
+        &lsquo;명당&rsquo;은 있을까
+        <small>판매점 한 곳이 여러 번 배출할 확률</small>
       </h2>
 
-      <div className="hint" style={{ marginTop: 0, marginBottom: 10 }}>
+      <div className="hint" style={{ marginTop: 0, marginBottom: 12 }}>
         전국 판매점이 다 똑같이 판다면 한 곳이 1년에 여러 번 1등을 내는 일은 거의 없어야 한다.
         실제와 견줘 보면:
       </div>
@@ -124,7 +125,7 @@ export default function RegionStats() {
           <span>1년에 {h.k}번 배출한 판매점</span>
           <b>
             {h.observed}곳{' '}
-            <span className="mini" style={{ color: 'var(--sub)' }}>
+            <span className="mini" style={{ fontWeight: 400 }}>
               (다 똑같이 팔았다면 {fmtExp(h.expected)})
             </span>
           </b>
@@ -138,7 +139,7 @@ export default function RegionStats() {
         </b>
       </div>
 
-      <div className="row" style={{ gap: 6, flexWrap: 'wrap', marginTop: 12 }}>
+      <div className="row" style={{ gap: 6, flexWrap: 'wrap', marginTop: 16 }}>
         {top.slice(0, 9).map((s) => (
           <span className="tag" key={s.n + s.g}>
             {s.c}건 · {s.n} <span className="mini">({s.g})</span>
@@ -147,7 +148,7 @@ export default function RegionStats() {
       </div>
 
       <div className="hint">
-        <b>쏠림은 진짜다. 다만 이유가 '기운'은 아니다.</b> 3번 배출한 곳이 {storeHist[2].observed}곳인데
+        <b>쏠림은 진짜다. 다만 이유가 &lsquo;기운&rsquo;은 아니다.</b> 3번 배출한 곳이 {storeHist[2].observed}곳인데
         모두 똑같이 팔았다면 {storeHist[2].expected.toFixed(1)}곳이어야 한다. 이만큼 쏠렸다는 건
         판매점마다 파는 양이 크게 다르다는 뜻이다 — 많이 파는 가게가 많이 배출한다. 게다가
         명당으로 소문나면 사람이 몰려 더 많이 팔고, 그래서 또 배출한다. 순서가 거꾸로다.
@@ -157,7 +158,7 @@ export default function RegionStats() {
       <div className="hint">
         출처: 공공데이터포털 <a href="https://www.data.go.kr/data/15059963/fileData.do" target="_blank" rel="noreferrer">온라인복권 1등 당첨 판매점 현황</a>,{' '}
         <a href="https://www.data.go.kr/data/15086355/fileData.do" target="_blank" rel="noreferrer">복권판매점 목록</a> (기획예산처, 이용허락범위 제한 없음).
-        원본이 <b>1등 '자동 선택'만</b> 담고 있어 수동 1등은 빠져 있고, 최근 1년치이며 연 1회 갱신된다
+        원본이 <b>1등 &lsquo;자동 선택&rsquo;만</b> 담고 있어 수동 1등은 빠져 있고, 최근 1년치이며 연 1회 갱신된다
         (내려받은 날 {meta.asof}). 인터넷 구매 {online}건은 판매점이 아닌데 동행복권 소재지인
         서울 서초구로 기록돼 지역 통계에서 뺐다.
       </div>

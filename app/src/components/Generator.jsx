@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Ball from './Ball.jsx'
+import Icon from './Icon.jsx'
 import { comboSet, pairScore, avgPairScore } from '../lib/stats.js'
 import { randomNumbers } from '../lib/scoring.js'
 
@@ -32,7 +33,7 @@ function generate(strategy) {
     }
     meta =
       `역대 동반출현 ${bestSc}회 (무작위 평균 약 ${avgPairScore}회)` +
-      (comboSet.has(nums.join('-')) ? ' · 이 조합은 과거에 나온 적 있어요!' : ' · 6조합 자체도 역대 미출현 ✓')
+      (comboSet.has(nums.join('-')) ? ' · 이 조합은 과거에 나온 적 있어요' : ' · 6조합 자체도 역대 미출현')
   } else {
     nums = randomNumbers()
   }
@@ -51,7 +52,7 @@ export default function Generator({ onAnalyze, onSlot }) {
 
   return (
     <div className="card full" id="sec-gen">
-      <h2>🎰 행운 번호 생성기 <small>전략을 골라보세요</small></h2>
+      <h2><Icon name="dice" />행운 번호 생성기<small>전략을 골라보세요</small></h2>
       <div className="seg">
         {STRATS.map((s) => (
           <button key={s.key} className={strategy === s.key ? 'on' : ''} onClick={() => setStrategy(s.key)}>
@@ -60,14 +61,14 @@ export default function Generator({ onAnalyze, onSlot }) {
         ))}
       </div>
       <div className="row">
-        <button className="primary" onClick={onGen}>🎲 번호 뽑기</button>
-        {result && <button onClick={() => onSlot(result.nums)}>🎰 이 번호로 슬롯</button>}
-        {result && <button onClick={() => onAnalyze(result.nums)}>🎯 분석·시뮬 하기</button>}
+        <button className="primary" onClick={onGen}><Icon name="dice" size={16} />번호 뽑기</button>
+        {result && <button onClick={() => onSlot(result.nums)}><Icon name="slot" size={16} />이 번호로 슬롯</button>}
+        {result && <button onClick={() => onAnalyze(result.nums)}><Icon name="target" size={16} />분석·시뮬 하기</button>}
         <span className="mini">{desc}</span>
       </div>
       {result && (
         <>
-          <div className="balls" style={{ marginTop: 14 }}>
+          <div className="balls" style={{ marginTop: 16 }}>
             {result.nums.map((n, i) => (
               <Ball key={i} n={n} />
             ))}

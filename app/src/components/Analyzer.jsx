@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Ball from './Ball.jsx'
+import Icon from './Icon.jsx'
 import { DATA } from '../data/lottoData.js'
 import { freq } from '../lib/stats.js'
 import { ballClass, randomNumbers } from '../lib/scoring.js'
@@ -131,7 +132,7 @@ export default function Analyzer({ initialNums }) {
 
   return (
     <div className="card full" id="sec-analyze" ref={cardRef}>
-      <h2>🎯 내 번호 분석 & 시뮬레이터 <small>한 세트로 둘 다</small></h2>
+      <h2><Icon name="target" />내 번호 분석 &amp; 시뮬레이터<small>한 세트로 둘 다</small></h2>
 
       <div className="row">
         {nums.map((v, i) => (
@@ -146,12 +147,16 @@ export default function Analyzer({ initialNums }) {
             onChange={(e) => setNum(i, e.target.value)}
           />
         ))}
-        <button onClick={fillRandom}>🎲 랜덤</button>
+        <button onClick={fillRandom}><Icon name="dice" size={16} />랜덤</button>
       </div>
 
-      <div className="seg" style={{ marginTop: 12 }}>
-        <button className={mode === 'anal' ? 'on' : ''} onClick={() => setMode('anal')}>🔍 분석</button>
-        <button className={mode === 'sim' ? 'on' : ''} onClick={() => setMode('sim')}>💰 시뮬레이션</button>
+      <div className="seg" style={{ marginTop: 16 }}>
+        <button className={mode === 'anal' ? 'on' : ''} onClick={() => setMode('anal')}>
+          <Icon name="search" size={16} />분석
+        </button>
+        <button className={mode === 'sim' ? 'on' : ''} onClick={() => setMode('sim')}>
+          <Icon name="coins" size={16} />시뮬레이션
+        </button>
       </div>
 
       {mode === 'sim' && (
@@ -174,8 +179,8 @@ export default function Analyzer({ initialNums }) {
         </div>
       )}
 
-      <div className="row" style={{ marginTop: 10 }}>
-        <button className="primary" onClick={run}>▶ 실행</button>
+      <div className="row" style={{ marginTop: 12 }}>
+        <button className="primary" onClick={run}><Icon name="play" size={16} />실행</button>
         <span className="mini">
           {mode === 'sim' ? '이 번호로 꾸준히 샀다면 수익을 계산합니다' : '역대 당첨 이력과 내 번호를 비교합니다'}
         </span>
@@ -186,7 +191,7 @@ export default function Analyzer({ initialNums }) {
       {s && <SimView mine={mine} s={s} />}
 
       {mode === 'sim' && (
-        <div className="hint" style={{ marginTop: 8 }}>
+        <div className="hint">
           매 회차 같은 번호로 (주당금액÷1,000)장씩 샀다고 가정합니다. 1·2등은 회차별 실제값, 3등 150만·4등 5만·5등 5천원은 통상 근사값이에요.
         </div>
       )}
@@ -200,12 +205,12 @@ function AnalyzeView({ mine, a }) {
     <div className="res">
       {a.best.grade < 99 ? (
         <div className={`grade g${a.best.grade}`}>
-          🎉 역대 최고 {gName[a.best.grade]} 적중 이력! <span className="mini">({a.best.round}회차 기준)</span>
+          역대 최고 {gName[a.best.grade]} 적중 이력 <span className="mini">({a.best.round}회차 기준)</span>
         </div>
       ) : (
         <div className="grade g0">아쉽게도 역대에 3등 이상 적중한 적은 없어요.</div>
       )}
-      <div className="balls" style={{ margin: '12px 0' }}>
+      <div className="balls" style={{ margin: '14px 0' }}>
         {mine.map((n, i) => (
           <Ball key={i} n={n} />
         ))}
@@ -213,13 +218,14 @@ function AnalyzeView({ mine, a }) {
       <div className="stat"><span>이 조합으로 받았을 등수 횟수</span><b>1등 {a.gradeCnt[1]} · 2등 {a.gradeCnt[2]} · 3등 {a.gradeCnt[3]} · 4등 {a.gradeCnt[4]} · 5등 {a.gradeCnt[5]}</b></div>
       <div className="stat"><span>합계 / 홀짝</span><b>{a.sum} (평균대 130~145) · 홀{a.odd}:짝{6 - a.odd}</b></div>
       <div className="stat"><span>6개 번호 누적 출현 횟수</span><b>{a.totalFreq}회</b></div>
-      <div className="hint">각 번호 출현: {mine.map((n) => <span className="tag" key={n}>{n}번 {freq[n]}회</span>)}</div>
-      <div className="hint" style={{ marginTop: 14, color: 'var(--txt)', fontSize: 13 }}>
-        📅 내 번호와 가장 닮았던 역대 회차 TOP 3 <span className="mini">(겹친 번호만 진하게)</span>
+      <div className="hint">각 번호 출현: {mine.map((n) => <span className="tag" key={n} style={{ marginRight: 4 }}>{n}번 {freq[n]}회</span>)}</div>
+      <div className="hint" style={{ marginTop: 20, color: 'var(--body-strong)', display: 'flex', alignItems: 'center', gap: 7 }}>
+        <Icon name="calendar" size={15} />
+        내 번호와 가장 닮았던 역대 회차 TOP 3 <span className="mini">(겹친 번호만 진하게)</span>
       </div>
       {a.top3.map((sm) => (
-        <div className="row" key={sm.d.round} style={{ gap: 10, marginTop: 8, alignItems: 'center' }}>
-          <span className="tag" style={{ minWidth: 54, textAlign: 'center' }}>{sm.d.round}회</span>
+        <div className="row" key={sm.d.round} style={{ gap: 10, marginTop: 10, alignItems: 'center' }}>
+          <span className="tag" style={{ minWidth: 54, justifyContent: 'center' }}>{sm.d.round}회</span>
           <div className="balls">
             {sm.d.n.map((n, i) => (
               <span className={`ball ${ballClass(n)}`} key={i} style={{ opacity: mset.has(n) ? 1 : 0.28 }}>{n}</span>
@@ -235,28 +241,28 @@ function AnalyzeView({ mine, a }) {
 }
 
 function SimView({ mine, s }) {
-  const pc = s.profit >= 0 ? 'g3' : 'g0'
+  const pos = s.profit >= 0
   return (
     <div className="res">
-      <div className={`grade ${pc}`}>
-        {s.profit >= 0 ? '📈 +' : '📉 '}
-        {won(s.profit)}원 {s.profit >= 0 ? '수익!' : '손해'}
+      <div className={`grade ${pos ? 'pos' : 'neg'}`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Icon name={pos ? 'up' : 'down'} size={22} />
+        {pos ? '+' : ''}{won(s.profit)}원 {pos ? '수익' : '손해'}
       </div>
-      <div className="balls" style={{ margin: '12px 0' }}>
+      <div className="balls" style={{ margin: '14px 0' }}>
         {mine.map((n, i) => (
           <Ball key={i} n={n} />
         ))}
       </div>
       <div className="stat"><span>총 구매 ({s.draws}회 × {s.games}게임)</span><b>{won(s.spend)}원</b></div>
       <div className="stat"><span>총 당첨금</span><b>{won(s.payout)}원</b></div>
-      <div className="stat"><span>순손익 / 수익률</span><b className={pc}>{s.profit >= 0 ? '+' : ''}{won(s.profit)}원 ({s.roi.toFixed(1)}%)</b></div>
+      <div className="stat"><span>순손익 / 수익률</span><b className={pos ? 'pos' : 'neg'}>{pos ? '+' : ''}{won(s.profit)}원 ({s.roi.toFixed(1)}%)</b></div>
       <div className="stat"><span>당첨 횟수</span><b>1등 {s.cnt[1]} · 2등 {s.cnt[2]} · 3등 {s.cnt[3]} · 4등 {s.cnt[4]} · 5등 {s.cnt[5]}</b></div>
       {s.best.d ? (
-        <div className="hint" style={{ marginTop: 8 }}>
-          ✨ 최고의 순간: <b>{s.best.d.round}회 {gName[s.best.g]}</b> 당첨 ({won(s.best.pz * s.games)}원)
+        <div className="hint">
+          최고의 순간: <b>{s.best.d.round}회 {gName[s.best.g]}</b> 당첨 ({won(s.best.pz * s.games)}원)
         </div>
       ) : (
-        <div className="hint" style={{ marginTop: 8 }}>아쉽게도 이 기간엔 당첨이 없었어요 😢</div>
+        <div className="hint">아쉽게도 이 기간엔 당첨이 없었어요.</div>
       )}
     </div>
   )
