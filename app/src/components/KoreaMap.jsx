@@ -48,7 +48,7 @@ export default function KoreaMap({ title, regions, values, unit }) {
           <path key={s.name} d={s.d} fill={LAND} stroke={EDGE} strokeWidth={1} strokeLinejoin="round" />
         ))}
 
-        {/* 2. 값. 큰 원이 작은 원을 가리지 않게 작은 것부터 그린다 */}
+        {/* 2. 값. 큰 원부터 그려 아래에 깔고, 작은 원이 그 위에 오게 한다 */}
         {[...SHAPES]
           .sort((a, b) => (byName.get(b.name) ?? 0) - (byName.get(a.name) ?? 0))
           .map((s) => {

@@ -58,6 +58,11 @@ export default function SlotMachine() {
     clearMyNumbers()
     setMode('auto')
     setReel(randomNumbers())
+    // 릴만 바꾸고 직전 추첨을 남겨두면 안 된다. 일치 표시는 draw 를 지금 릴과
+    // 대조해 그리기 때문에, 새 릴 기준으로 다시 칠해져 "0개 일치"인데 공에
+    // 불이 들어오는 상태가 된다.
+    setDraw(null)
+    setResult(null)
   }
 
   const mset = new Set(reel)
@@ -135,7 +140,9 @@ export default function SlotMachine() {
           </button>
         ) : (
           <button className="primary" onClick={refill}>
-            <Icon name="refresh" size={16} />포인트 소진! 무료 충전 받기 (+100pt)
+            {/* 잔액이 0 이 아니라 스핀 비용 미만일 때도 뜬다. "소진"이라고 하면
+                5pt 가 남아 있는데 0 이라고 말하는 셈이라 문구를 맞춘다 */}
+            <Icon name="refresh" size={16} />포인트가 부족해요! 무료 충전 받기 (+100pt)
           </button>
         )}
       </div>

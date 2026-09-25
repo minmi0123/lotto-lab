@@ -16,7 +16,12 @@ function load() {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return fresh()
-    return { ...fresh(), ...JSON.parse(raw) }
+    const base = fresh()
+    const saved = JSON.parse(raw)
+    // wins 는 한 겹 더 들어가 있어서 얕게 덮으면 통째로 갈린다. 등수 키가
+    // 빠진 저장본(옛 버전·손으로 고친 값)이 오면 그 등수가 undefined 가 되고,
+    // 화면엔 빈칸, 그 등수에 당첨되는 순간 undefined + 1 = NaN 이 된다.
+    return { ...base, ...saved, wins: { ...base.wins, ...(saved?.wins || {}) } }
   } catch {
     return fresh()
   }

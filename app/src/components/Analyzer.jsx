@@ -14,7 +14,10 @@ const gName = { 1: '1등', 2: '2등', 3: '3등', 4: '4등', 5: '5등' }
 function won(v) {
   const a = Math.abs(v)
   if (a >= 1e8) return (v / 1e8).toFixed(a >= 1e9 ? 0 : 1) + '억'
-  if (a >= 1e4) return Math.round(v / 1e4).toLocaleString() + '만'
+  // 100만 미만에서 만 단위를 반올림하면 52,000원이 '5만원'이 된다. 그러면
+  // 총 구매 5만 / 순손익 -5만 이 같은 값으로 보여 전부 잃은 것처럼 읽힌다.
+  if (a >= 1e6) return Math.round(v / 1e4).toLocaleString() + '만'
+  if (a >= 1e4) return (v / 1e4).toFixed(1) + '만'
   return Math.round(v).toLocaleString()
 }
 function gradeOf(m, bon) {
@@ -104,8 +107,11 @@ export default function Analyzer({ initialNums }) {
     }
   }, [initialNums])
 
-  const mine = nums.map((v) => parseInt(v, 10))
-  const valid = mine.every((v) => v >= 1 && v <= 45) && new Set(mine).size === 6
+  // parseInt 를 쓰면 "1.9" 가 조용히 1 이 된다. 입력칸엔 1.9 가 남아 있는데
+  // 결과는 1 로 나와 서로 어긋나므로, 정수가 아니면 그냥 잘못된 입력으로 본다.
+  const mine = nums.map((v) => Number(v))
+  const valid =
+    mine.every((v) => Number.isInteger(v) && v >= 1 && v <= 45) && new Set(mine).size === 6
 
   function setNum(i, v) {
     const next = [...nums]
