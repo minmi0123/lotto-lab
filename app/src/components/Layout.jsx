@@ -17,8 +17,8 @@ export default function Layout() {
       <Header balance={balance} />
 
       <nav className="nav">
-        <NavLink to="/" end><Icon name="slot" size={16} />슬롯 게임</NavLink>
-        <NavLink to="/stats"><Icon name="chart" size={16} />통계 대시보드</NavLink>
+        <NavLink to="/" end><Icon name="chart" size={16} />통계 대시보드</NavLink>
+        <NavLink to="/slot"><Icon name="slot" size={16} />슬롯 게임</NavLink>
         <NavLink to="/analyze"><Icon name="target" size={16} />분석·시뮬</NavLink>
       </nav>
 

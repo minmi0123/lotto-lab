@@ -15,7 +15,7 @@ export default function Analyze() {
   const onAnalyze = (nums) => setPicked([...nums]) // 새 배열로 → 분석기 useEffect 트리거
   const onSlot = (nums) => {
     setMyNumbers(nums)
-    navigate('/')
+    navigate('/slot')
   }
 
   return (
