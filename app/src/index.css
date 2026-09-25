@@ -238,22 +238,31 @@ a:hover{color:var(--primary-active);}
 .slot .jackpot{animation:jp .6s ease infinite alternate;}
 @keyframes jp{from{opacity:.75;}to{opacity:1;}}
 
-/* ---------- 시도 지도 ---------- */
-.maps{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:4px;}
-.koreamap{margin:0;}
+/* ---------- 시도 지도 ----------
+   지도 한 장 + 옆에 범례·순위. 지도를 카드 폭 전체로 키우면 세로가 1,300px 을
+   넘어가므로 폭을 묶어 두고 남는 가로를 옆 칸이 쓴다. */
+.koreamap{
+  display:grid;
+  grid-template-columns:minmax(0,480px) max-content;
+  justify-content:start;
+  align-items:center;
+  gap:40px;
+  margin:4px 0 0;
+}
+.map-title{
+  grid-column:1/-1;justify-self:start;
+  font-size:12px;font-weight:600;letter-spacing:1.5px;line-height:1.4;
+  text-transform:uppercase;color:var(--muted);margin:0 0 4px;
+}
 /* 자식 선택자로 지도 svg 만. 범례 svg 까지 폭 100% 가 되면 안 된다 */
 .koreamap > svg{width:100%;height:auto;display:block;}
-.map-title{
-  font-size:12px;font-weight:600;letter-spacing:1.5px;line-height:1.4;
-  text-transform:uppercase;color:var(--muted);margin:0 0 10px;
-}
-.map-foot{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-top:8px;}
+.map-foot{display:flex;flex-direction:column;align-items:flex-start;gap:20px;}
 .map-legend{width:170px;height:auto;flex:none;display:block;}
 .map-legend-t{fill:var(--muted);font-size:12px;}
-.map-top{list-style:none;margin:0;padding:0;font-size:13px;color:var(--muted);}
-.map-top li{display:flex;align-items:center;gap:7px;padding:2px 0;}
+.map-top{list-style:none;margin:0;padding:0;font-size:14px;color:var(--muted);}
+.map-top li{display:flex;align-items:center;gap:8px;padding:3px 0;}
 .map-top b{color:var(--body-strong);font-weight:600;font-variant-numeric:tabular-nums;}
-.map-top .rank{width:19px;height:19px;font-size:11px;}
+.map-top .rank{width:20px;height:20px;font-size:11px;}
 
 /* ---------- 착시 코너 / forest plot ---------- */
 .noise{width:100%;height:auto;display:block;margin:4px 0 8px;overflow:visible;}
@@ -289,8 +298,9 @@ a:hover{color:var(--primary-active);}
   .balls{gap:6px;}
   .slot .reel{gap:8px;}
   .res,.result{padding:16px;}
-  /* 지도 두 장을 세로로 쌓으면 각각이 화면 폭을 다 써서 타일 글자가 커진다 */
-  .maps{grid-template-columns:1fr;gap:24px;}
+  /* 좁은 화면에선 지도 아래로 범례·순위를 내린다 */
+  .koreamap{grid-template-columns:1fr;gap:16px;}
+  .map-foot{flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:20px;}
   /* viewBox 가 축소되면 9px 는 5px 로 보임 → 사용자단위를 키워 가독성 확보 */
   .noise-tick,.noise-cap{font-size:16px;}
 }

@@ -23,7 +23,7 @@ const rows = [...byRegion].sort((a, b) => b.ratio - a.ratio)
 // 지도용. byRegion 은 REGIONS 와 같은 순서라 그대로 뽑아 쓴다.
 const winVals = byRegion.map((r) => r.wins)
 const shopVals = byRegion.map((r) => r.shops)
-// 두 지도가 실제로 얼마나 닮았는지 — 순위 상관(스피어만)으로 재서 글로도 말해준다.
+// 배출과 판매점이 얼마나 같이 움직이는지 — 순위 상관(스피어만)으로 재서 글로 말해준다.
 // 배출 건수엔 동점이 많다(20건이 3곳, 23건이 2곳). 동점에 임의 순위를 주면
 // 값이 흔들리므로 평균 순위를 매기고, 그 위에서 피어슨을 구한다.
 const spearman = (() => {
@@ -71,17 +71,17 @@ export default function RegionStats() {
     <div className="card full" id="sec-region">
       <h2><Icon name="map" />지역별 1등 배출<small>판매점 수로 보정해서</small></h2>
 
-      {/* 1단계 — 지도 두 장을 나란히. "많이 나온 곳"과 "판매점이 많은 곳"이
-          같은 모양이라는 걸 보고 나면 아래 forest plot 이 설명이 된다.
-          땅은 값으로 칠하지 않고 원 넓이로만 말한다 (KoreaMap 주석 참고). */}
-      <div className="maps">
-        <KoreaMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" />
-        <KoreaMap title="로또 판매점 수" regions={regions} values={shopVals} unit="곳" />
-      </div>
+      {/* 1단계 — 지도는 "경기·서울이 명당인가?" 라는 착시를 일부러 만든다.
+          아래 forest plot 이 그걸 깬다.
+          한때 판매점 수 지도를 옆에 같이 뒀는데, 두 장이 거의 똑같이 생겨서
+          비교로 읽히기 전에 "잘못 그려진 것 아닌가" 로 먼저 읽혔다. 판매점과
+          같이 움직인다는 근거는 아래 forest plot 의 각 행(N건 / 판매점 N곳)에
+          이미 다 있으므로 지도는 한 장만 둔다. */}
+      <KoreaMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" />
 
       <div className="hint" style={{ marginTop: 12 }}>
-        <b>두 지도가 거의 같은 모양이다.</b> 1등이 많이 나온 곳(경기 {byRegion[1].wins}건, 서울 {byRegion[0].wins}건)은
-        판매점도 가장 많은 곳(경기 {byRegion[1].shops.toLocaleString()}곳, 서울 {byRegion[0].shops.toLocaleString()}곳)이다.
+        <b>수도권이 압도적으로 보인다.</b> 경기 {byRegion[1].wins}건, 서울 {byRegion[0].wins}건.
+        그런데 판매점도 경기 {byRegion[1].shops.toLocaleString()}곳, 서울 {byRegion[0].shops.toLocaleString()}곳으로 가장 많다.
         16개 시도의 배출 순위와 판매점 순위는 {spearman.toFixed(2)}만큼 함께 움직인다(1.00이면 완전히 같은 순서).
         많이 파니까 많이 나오는 것이지, 그 지역의 운이 좋은 게 아니다. 아래는 판매점 수로 나눠서 다시 본 것이다.
         {' '}<span className="mini">(원 넓이가 값이다. 제주는 지면을 아끼려고 실제보다 위로 당겨 그렸고,
