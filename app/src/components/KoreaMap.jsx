@@ -11,19 +11,19 @@ import { label } from '../lib/regionStats.js'
 // 수도권은 원끼리 겹칠 수밖에 없다(경기가 서울을 감싼다). 속을 채우는 대신
 // 옅게 칠하고 테두리를 살려서, 겹쳐도 각 원의 크기를 따로 읽을 수 있게 했다.
 //
-// 색은 무채색만 쓴다. 이 지도 두 장은 "배출이 많은 곳과 판매점이 많은 곳이
-// 같다"를 견주려고 나란히 놓는 것이라, 한쪽에만 눈이 가게 하면 안 된다.
+// 색은 무채색만 쓴다. 예외는 옆 표에서 고른 지역 하나로, 파란색으로 짚어 준다.
 
 const R_MAX = 34 // 가장 큰 값의 원 반지름
 const LAND = '#2e2e2e'
 const EDGE = '#141414' // 시도 경계선. 카드 배경(#1a1a1a)보다 어두워 땅이 떠 보인다
 const DOT = '#e8e8e8'
 const ZERO = '#6b6b6b'
+const SEL = '#3b82f6' // 선택 지역 (로또 공 파랑과 같은 색)
 
 const LEG_W = 170,
   LEG_H = 2 * R_MAX + 12
 
-export default function KoreaMap({ title, regions, values, unit }) {
+export default function KoreaMap({ title, regions, values, unit, selected, onSelect, children }) {
   const max = Math.max(...values)
   const byName = new Map(regions.map((n, i) => [n, values[i]]))
   const ranked = [...byName.entries()].sort((a, b) => b[1] - a[1])
@@ -51,13 +51,17 @@ export default function KoreaMap({ title, regions, values, unit }) {
         {/* 2. 값. 큰 원부터 그려 아래에 깔고, 작은 원이 그 위에 오게 한다 */}
         {[...SHAPES]
           .sort((a, b) => (byName.get(b.name) ?? 0) - (byName.get(a.name) ?? 0))
+          .sort((a, b) => (a.name === selected) - (b.name === selected))
           .map((s) => {
             const v = byName.get(s.name) ?? 0
             const tip = `${label(s.name)} · ${v.toLocaleString()}${unit}`
+            const on = s.name === selected
+            const pick = onSelect ? () => onSelect(on ? null : s.name) : undefined
             // 0 은 원이 사라져 지도에서 없는 지역처럼 보인다. 빈 고리로 자리를 남긴다
             if (v === 0) {
               return (
-                <circle key={s.name} cx={s.cx} cy={s.cy} r={4} fill="none" stroke={ZERO} strokeWidth={1.2} strokeDasharray="2 2">
+                <circle key={s.name} cx={s.cx} cy={s.cy} r={on ? 6 : 4} fill="none" stroke={on ? SEL : ZERO}
+                  strokeWidth={on ? 2 : 1.2} strokeDasharray="2 2" onClick={pick} className={onSelect ? 'map-pick' : undefined}>
                   <title>{tip}</title>
                 </circle>
               )
@@ -68,10 +72,12 @@ export default function KoreaMap({ title, regions, values, unit }) {
                 cx={s.cx}
                 cy={s.cy}
                 r={r(v)}
-                fill={DOT}
-                fillOpacity={0.26}
-                stroke={DOT}
-                strokeWidth={1.4}
+                fill={on ? SEL : DOT}
+                fillOpacity={on ? 0.6 : 0.26}
+                stroke={on ? SEL : DOT}
+                strokeWidth={on ? 2 : 1.4}
+                onClick={pick}
+                className={onSelect ? 'map-pick' : undefined}
               >
                 <title>{tip}</title>
               </circle>
@@ -79,7 +85,7 @@ export default function KoreaMap({ title, regions, values, unit }) {
           })}
       </svg>
 
-      {/* 원 크기 기준 + 상위 3곳.
+      {/* 원 크기 기준 + 옆 칸 내용(없으면 상위 3곳).
           숫자를 지도 위에 얹으면 수도권에서 겹쳐 못 읽는다(경기와 서울이 10px 거리). */}
       <div className="map-foot">
         <svg
@@ -95,14 +101,14 @@ export default function KoreaMap({ title, regions, values, unit }) {
             {unit}
           </text>
         </svg>
-        <ol className="map-top">
+        {children ?? <ol className="map-top">
           {ranked.slice(0, 3).map(([n, v], i) => (
             <li key={n}>
               <span className="rank">{i + 1}</span>
               {label(n)} <b>{v.toLocaleString()}{unit}</b>
             </li>
           ))}
-        </ol>
+        </ol>}
       </div>
     </figure>
   )

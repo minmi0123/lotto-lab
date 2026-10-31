@@ -182,8 +182,15 @@ select:focus,input:focus{outline:none;border-color:var(--primary);}
 .stat b.neg{color:var(--rose);}
 
 /* 지역별 1등 배출 표 */
-.region-table{width:100%;max-width:420px;border-collapse:collapse;margin-top:16px;font-size:14px;color:var(--body);}
-.region-table th{text-align:left;font-weight:500;color:var(--muted);font-size:13px;padding:8px 10px;border-bottom:1px solid var(--hairline-strong);}
+.region-table-wrap{width:260px;max-height:330px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--hairline-strong) transparent;border:1px solid var(--hairline);border-radius:var(--r-sm);}
+.region-table{width:100%;border-collapse:collapse;font-size:14px;color:var(--body);}
+.region-table th{position:sticky;top:0;background:var(--surface-card);text-align:left;font-weight:500;color:var(--muted);font-size:13px;padding:8px 10px;border-bottom:1px solid var(--hairline-strong);}
+.region-table tbody tr{cursor:pointer;}
+.region-table tbody tr:hover{background:var(--surface-elevated);}
+.region-table tbody tr:focus-visible{outline:2px solid #3b82f6;outline-offset:-2px;}
+.region-table tbody tr.on{background:rgba(59,130,246,.18);}
+.region-table tbody tr.on td{color:#8ec5ff;}
+.map-pick{cursor:pointer;}
 .region-table td{padding:8px 10px;border-bottom:1px solid var(--hairline);font-variant-numeric:tabular-nums;}
 .region-table th:first-child,.region-table td:first-child{width:56px;color:var(--muted);}
 .region-table th:last-child,.region-table td:last-child{text-align:right;color:var(--ink);font-weight:600;}
@@ -311,6 +318,7 @@ a:hover{color:var(--primary-active);}
   /* 좁은 화면에선 지도 아래로 범례·순위를 내린다 */
   .koreamap{grid-template-columns:1fr;gap:16px;}
   .map-foot{flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:20px;}
+  .region-table-wrap{width:100%;max-height:280px;}
   /* viewBox 가 축소되면 9px 는 5px 로 보임 → 사용자단위를 키워 가독성 확보 */
   .noise-tick,.noise-cap{font-size:16px;}
 }

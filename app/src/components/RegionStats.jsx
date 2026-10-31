@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Icon from './Icon.jsx'
 import KoreaMap from './KoreaMap.jsx'
 import { regions, label, byRegion, within2, outliers, storeHist, multi, totals, top, online, meta } from '../lib/regionStats.js'
@@ -40,6 +41,7 @@ for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) ticks.push(Math.ro
 const fmtExp = (v) => (v < 0.05 ? '0.01곳 미만' : v < 1 ? `${v.toFixed(1)}곳` : `${Math.round(v)}곳`)
 
 export default function RegionStats() {
+  const [sel, setSel] = useState(null)
   return (
     <div className="card full" id="sec-region">
       <h2><Icon name="map" />지역별 1등 배출<small>판매점 수 보정</small></h2>
@@ -50,22 +52,35 @@ export default function RegionStats() {
           비교로 읽히기 전에 "잘못 그려진 것 아닌가" 로 먼저 읽혔다. 판매점과
           같이 움직인다는 근거는 아래 forest plot 의 각 행(N건 / 판매점 N곳)에
           이미 다 있으므로 지도는 한 장만 둔다. */}
-      <KoreaMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" />
-
-      <table className="region-table">
-        <thead>
-          <tr><th>순위</th><th>지역</th><th>1등 배출</th></tr>
-        </thead>
-        <tbody>
-          {winRank.map((r, i) => (
-            <tr key={r.name}>
-              <td>{i + 1}</td>
-              <td>{label(r.name)}</td>
-              <td>{r.wins}건</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <KoreaMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" selected={sel} onSelect={setSel}>
+        <div className="region-table-wrap">
+          <table className="region-table">
+            <thead>
+              <tr><th>순위</th><th>지역</th><th>1등 배출</th></tr>
+            </thead>
+            <tbody>
+              {winRank.map((r, i) => {
+                const on = sel === r.name
+                const pick = () => setSel(on ? null : r.name)
+                return (
+                  <tr
+                    key={r.name}
+                    className={on ? 'on' : undefined}
+                    tabIndex={0}
+                    aria-selected={on}
+                    onClick={pick}
+                    onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), pick())}
+                  >
+                    <td>{i + 1}</td>
+                    <td>{label(r.name)}</td>
+                    <td>{r.wins}건</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </KoreaMap>
 
       <div className="hint" style={{ marginTop: 12 }}>
         표기 참고
