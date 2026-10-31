@@ -260,7 +260,7 @@ a:hover{color:var(--primary-active);}
    넘어가므로 폭을 묶어 두고 남는 가로를 옆 칸이 쓴다. */
 .koreamap{
   display:grid;
-  grid-template-columns:minmax(0,480px) max-content;
+  grid-template-columns:minmax(0,480px) max-content minmax(220px,300px);
   justify-content:start;
   align-items:center;
   gap:40px;
@@ -273,9 +273,14 @@ a:hover{color:var(--primary-active);}
 }
 /* 자식 선택자로 지도 svg 만. 범례 svg 까지 폭 100% 가 되면 안 된다 */
 .koreamap > svg{width:100%;height:auto;display:block;}
-.map-foot{display:flex;flex-direction:column;align-items:flex-start;gap:20px;}
-.map-legend{width:170px;height:auto;flex:none;display:block;}
-.map-legend-t{fill:var(--muted);font-size:12px;}
+.map-foot{display:flex;flex-direction:column;align-items:flex-start;gap:12px;}
+.map-top-title{
+  margin:0;font-size:12px;font-weight:600;letter-spacing:1.5px;line-height:1.4;
+  text-transform:uppercase;color:var(--muted);
+}
+/* 표 칸은 지도 높이만큼 늘어나고, 표는 그 안을 꽉 채운 채 스크롤 */
+.map-side{align-self:stretch;position:relative;min-height:280px;}
+.map-side .region-table-wrap{position:absolute;inset:0;width:auto;max-height:none;}
 .map-top{list-style:none;margin:0;padding:0;font-size:14px;color:var(--muted);}
 .map-top li{display:flex;align-items:center;gap:8px;padding:3px 0;}
 .map-top b{color:var(--body-strong);font-weight:600;font-variant-numeric:tabular-nums;}
@@ -298,6 +303,11 @@ a:hover{color:var(--primary-active);}
 @media(max-width:900px){
   .grid{grid-template-columns:1fr;}
 }
+/* 세 칸이 안 들어가면 표를 지도 아래 한 줄로 */
+@media(max-width:1000px){
+  .koreamap{grid-template-columns:minmax(0,480px) max-content;}
+  .map-side{grid-column:1/-1;height:300px;}
+}
 @media(max-width:600px){
   body{padding:20px 16px 64px;}
   h1{font-size:28px;letter-spacing:-1px;}
@@ -317,8 +327,8 @@ a:hover{color:var(--primary-active);}
   .res,.result{padding:16px;}
   /* 좁은 화면에선 지도 아래로 범례·순위를 내린다 */
   .koreamap{grid-template-columns:1fr;gap:16px;}
-  .map-foot{flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:20px;}
-  .region-table-wrap{width:100%;max-height:280px;}
+  .koreamap{grid-template-columns:1fr;}
+  .map-foot{gap:8px;}
   /* viewBox 가 축소되면 9px 는 5px 로 보임 → 사용자단위를 키워 가독성 확보 */
   .noise-tick,.noise-cap{font-size:16px;}
 }

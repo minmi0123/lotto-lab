@@ -20,9 +20,6 @@ const DOT = '#e8e8e8'
 const ZERO = '#6b6b6b'
 const SEL = '#3b82f6' // 선택 지역 (로또 공 파랑과 같은 색)
 
-const LEG_W = 170,
-  LEG_H = 2 * R_MAX + 12
-
 export default function KoreaMap({ title, regions, values, unit, selected, onSelect, children }) {
   const max = Math.max(...values)
   const byName = new Map(regions.map((n, i) => [n, values[i]]))
@@ -85,31 +82,21 @@ export default function KoreaMap({ title, regions, values, unit, selected, onSel
           })}
       </svg>
 
-      {/* 원 크기 기준 + 옆 칸 내용(없으면 상위 3곳).
-          숫자를 지도 위에 얹으면 수도권에서 겹쳐 못 읽는다(경기와 서울이 10px 거리). */}
+      {/* 가운데 칸: 상위 3곳. 숫자를 지도 위에 얹으면 수도권에서 겹쳐 못 읽는다 */}
       <div className="map-foot">
-        <svg
-          className="map-legend"
-          viewBox={`0 0 ${LEG_W} ${LEG_H}`}
-          role="img"
-          aria-label={`원 크기 기준: 가장 큰 원이 ${max.toLocaleString()}${unit}`}
-        >
-          <circle cx={R_MAX + 1} cy={LEG_H - R_MAX - 1} r={R_MAX} fill={DOT} fillOpacity={0.26} stroke={DOT} strokeWidth={1.4} />
-          <circle cx={R_MAX + 1} cy={LEG_H - r(max / 4) - 1} r={r(max / 4)} fill={DOT} fillOpacity={0.26} stroke={DOT} strokeWidth={1.4} />
-          <text className="map-legend-t" x={2 * R_MAX + 12} y={LEG_H - R_MAX + 4}>
-            바깥 원 = {max.toLocaleString()}
-            {unit}
-          </text>
-        </svg>
-        {children ?? <ol className="map-top">
+        <p className="map-top-title">Top 3 Regions</p>
+        <ol className="map-top">
           {ranked.slice(0, 3).map(([n, v], i) => (
             <li key={n}>
               <span className="rank">{i + 1}</span>
               {label(n)} <b>{v.toLocaleString()}{unit}</b>
             </li>
           ))}
-        </ol>}
+        </ol>
       </div>
+
+      {/* 오른쪽 칸: 부모가 넘긴 내용(지역별 표). 높이는 지도에 맞추고 안에서 스크롤 */}
+      {children && <div className="map-side">{children}</div>}
     </figure>
   )
 }
