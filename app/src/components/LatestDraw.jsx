@@ -19,11 +19,9 @@ export default function LatestDraw() {
         <span className="plus">+</span>
         <Ball n={latest.b} />
       </div>
-      <div style={{ marginTop: 16 }}>
-        <div className="stat">
-          <span>1등</span>
-          <b>{latest.c1 ? `${latest.c1}명 · 1인당 ${(latest.w1 / 1e8).toFixed(1)}억원` : '당첨자 없음'}</b>
-        </div>
+      <div className="draw-info">
+        <span>1등</span>
+        <b>{latest.c1 ? `${latest.c1}명 · 1인당 ${(latest.w1 / 1e8).toFixed(1)}억원` : '당첨자 없음'}</b>
       </div>
     </div>
   )

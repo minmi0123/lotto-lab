@@ -1,6 +1,8 @@
 import Ball from './Ball.jsx'
 import Icon from './Icon.jsx'
-import { ranked, freq, freqMean, freqSd, splitHalf } from '../lib/stats.js'
+import HelpStat from './HelpStat.jsx'
+import ChartTip, { useChartTip } from './ChartTip.jsx'
+import { ranked, freq, freqMean, freqSd, splitHalf, totalRounds } from '../lib/stats.js'
 
 // emphasis 형태: 강조 1색 + 맥락 회색.
 // 핫/콜드는 '축 위치'(왼쪽 끝=콜드, 오른쪽 끝=핫)가 이미 구분하므로 색으로 또 나누지 않는다.
@@ -52,8 +54,11 @@ const within2 = freq.slice(1).filter((c) => Math.abs(c - freqMean) <= 2 * freqSd
 const expect2 = Math.round(45 * 0.954)
 
 const gap = Math.max(...freq.slice(1)) - Math.min(...freq.slice(1))
+const most = ranked[0].num
+const least = ranked[ranked.length - 1].num
 
 export default function HotCold() {
+  const tip = useChartTip()
   return (
     <div className="card full" id="sec-hotcold">
       <h2><Icon name="eye" />핫·콜드 분석</h2>
@@ -86,11 +91,11 @@ export default function HotCold() {
             r={d.edge ? 5 : 2.6}
             fill={d.edge ? HI : CTX}
             opacity={d.edge ? 1 : 0.5}
-            stroke={d.edge ? CARD : 'none'} strokeWidth={2}>
-            <title>{d.n}번 · {freq[d.n]}회</title>
-          </circle>
+            stroke={d.edge ? CARD : 'none'} strokeWidth={2}
+            {...tip.bind(`${d.n}번 · ${freq[d.n]}회`)} />
         ))}
       </svg>
+      <ChartTip tip={tip} />
 
       <div className="legend">
         <i style={{ background: HI }} /> 핫·콜드 12개(양 끝)
@@ -114,26 +119,64 @@ export default function HotCold() {
       </div>
 
       <div style={{ marginTop: 20 }}>
-        <div className="stat">
-          <span>최다 − 최소 격차</span><b>{gap}회</b>
-        </div>
-        <div className="stat">
-          <span>무작위로 뽑아도 생기는 변동폭</span><b>±{freqSd.toFixed(1)}회</b>
-        </div>
-        <div className="stat">
-          <span>95% 기대 범위(±2σ) 안</span><b>{within2}/45개 (기대 {expect2}개)</b>
-        </div>
-        <div className="stat">
-          <span>전반 핫 Top6 → 후반 평균</span>
-          <b className="neg">{splitHalf.hotLateRank}위</b>
-        </div>
-        <div className="stat">
-          <span>전반 콜드 Bottom6 → 후반 평균</span>
-          <b className="pos">{splitHalf.coldLateRank}위</b>
-        </div>
-        <div className="stat">
-          <span>무작위일 때 기대값</span><b>둘 다 {splitHalf.chance}위</b>
-        </div>
+        <HelpStat
+          label="최다 − 최소 격차"
+          value={`${gap}회`}
+          help={<>가장 많이 나온 번호({most}번, {freq[most]}회)와 가장 적게 나온 번호({least}번, {freq[least]}회)의 출현 횟수 차이.</>}
+        />
+        <HelpStat
+          label="무작위로 뽑아도 생기는 변동폭"
+          value={`±${freqSd.toFixed(1)}회`}
+          help={<>
+            {totalRounds}회 동안 매번 6개를 무작위로 뽑으면 번호 하나의 평균 출현은 {freqMean.toFixed(1)}회다.
+            실제 출현 횟수는 이 평균에서 위아래로 흔들리며, 그 흔들림의 표준 크기(표준편차, 1σ)가 ±{freqSd.toFixed(1)}회다.
+            무작위라면 번호의 약 68%가 평균 ±{freqSd.toFixed(1)}회({(freqMean - freqSd).toFixed(1)}~{(freqMean + freqSd).toFixed(1)}회) 안에 든다.
+            <div className="help-easy">
+              <b>쉬운 설명</b>
+              {totalRounds}회 동안 6개씩 뽑는다고 가정했을 때, 한 번호당 평균 {freqMean.toFixed(1)}회 나와야 합니다.
+              하지만 공정하게 뽑아도 딱 {Math.round(freqMean)}회로 맞지 않습니다.
+              (동전을 100번 던져도 정확히 앞면 50번이 나오는 경우는 드문 것과 같은 원리입니다.)
+              이 정도는 위아래로 흔들리는 게 정상이라는 폭이 ±{freqSd.toFixed(1)}회입니다.
+            </div>
+          </>}
+        />
+        <HelpStat
+          label="95% 기대 범위(±2σ) 안"
+          value={`${within2}/45개 (기대 ${expect2}개)`}
+          help={<>
+            출현 횟수가 평균 ±2σ({(freqMean - 2 * freqSd).toFixed(1)}~{(freqMean + 2 * freqSd).toFixed(1)}회) 안에 든 번호 수.
+            무작위라면 약 95%, 45개 중 {expect2}개가 이 범위에 든다.
+            <div className="help-easy">
+              <b>쉬운 설명</b>
+              위의 변동폭을 두 배(±{(2 * freqSd).toFixed(1)}회)로 잡았을 때, 번호의 95%는 그 안에 들어옵니다.
+              (45개 중 약 {expect2}개)
+              <p className="help-note">* 변동폭 두 배의 기준은 일반 통계, 여론조사, 의학 연구 등에서 쓰는 표준 기준입니다.</p>
+            </div>
+          </>}
+        />
+        <HelpStat
+          label="전반 핫 Top6 → 후반 평균"
+          value={`${splitHalf.hotLateRank}위`}
+          valueClass="neg"
+          help={<>
+            전체 회차를 반으로 나눠 전반(1~{splitHalf.half}회)에서 가장 많이 나온 6개 번호를 고르고,
+            이 번호들이 후반({splitHalf.half + 1}~{totalRounds}회) 출현 순위에서 몇 위였는지 평균한 값.
+          </>}
+        />
+        <HelpStat
+          label="전반 콜드 Bottom6 → 후반 평균"
+          value={`${splitHalf.coldLateRank}위`}
+          valueClass="pos"
+          help={<>
+            전반(1~{splitHalf.half}회)에서 가장 적게 나온 6개 번호가 후반({splitHalf.half + 1}~{totalRounds}회)
+            출현 순위에서 몇 위였는지 평균한 값.
+          </>}
+        />
+        <HelpStat
+          label="무작위일 때 기대값"
+          value={`둘 다 ${splitHalf.chance}위`}
+          help={<>45개 번호 중 아무 번호나 골랐을 때 기대되는 평균 순위. 1위와 45위의 가운데인 {splitHalf.chance}위.</>}
+        />
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 import { MAP_W, MAP_H, SHAPES } from '../data/koreaMap.js'
 import { label } from '../lib/regionStats.js'
+import ChartTip, { useChartTip } from './ChartTip.jsx'
 
 // 시도 경계 + 면적 비례 원.
 //
@@ -20,11 +21,12 @@ const DOT = '#e8e8e8'
 const ZERO = '#6b6b6b'
 const SEL = '#3b82f6' // 선택 지역 (로또 공 파랑과 같은 색)
 
-export default function KoreaMap({ title, regions, values, unit, selected, onSelect, children }) {
+export default function KoreaMap({ title, regions, values, unit, selected, onSelect, extraTop, children }) {
   const max = Math.max(...values)
   const byName = new Map(regions.map((n, i) => [n, values[i]]))
   const ranked = [...byName.entries()].sort((a, b) => b[1] - a[1])
   const r = (v) => (max ? R_MAX * Math.sqrt(v / max) : 0)
+  const tip = useChartTip()
 
   return (
     <figure className="koreamap">
@@ -51,16 +53,15 @@ export default function KoreaMap({ title, regions, values, unit, selected, onSel
           .sort((a, b) => (a.name === selected) - (b.name === selected))
           .map((s) => {
             const v = byName.get(s.name) ?? 0
-            const tip = `${label(s.name)} · ${v.toLocaleString()}${unit}`
+            const text = `${label(s.name)} · ${v.toLocaleString()}${unit}`
             const on = s.name === selected
             const pick = onSelect ? () => onSelect(on ? null : s.name) : undefined
             // 0 은 원이 사라져 지도에서 없는 지역처럼 보인다. 빈 고리로 자리를 남긴다
             if (v === 0) {
               return (
                 <circle key={s.name} cx={s.cx} cy={s.cy} r={on ? 6 : 4} fill="none" stroke={on ? SEL : ZERO}
-                  strokeWidth={on ? 2 : 1.2} strokeDasharray="2 2" onClick={pick} className={onSelect ? 'map-pick' : undefined}>
-                  <title>{tip}</title>
-                </circle>
+                  strokeWidth={on ? 2 : 1.2} strokeDasharray="2 2" onClick={pick} className={onSelect ? 'map-pick' : undefined}
+                  {...tip.bind(text)} />
               )
             }
             return (
@@ -75,16 +76,29 @@ export default function KoreaMap({ title, regions, values, unit, selected, onSel
                 strokeWidth={on ? 2 : 1.4}
                 onClick={pick}
                 className={onSelect ? 'map-pick' : undefined}
-              >
-                <title>{tip}</title>
-              </circle>
+                {...tip.bind(text)}
+              />
             )
           })}
       </svg>
+      <ChartTip tip={tip} />
 
       {/* 가운데 칸: 상위 3곳. 숫자를 지도 위에 얹으면 수도권에서 겹쳐 못 읽는다 */}
       <div className="map-foot">
-        <p className="map-top-title">Top 3 Regions</p>
+        {extraTop && (
+          <>
+            <p className="map-top-title">{extraTop.title}</p>
+            <ol className="map-top">
+              {extraTop.items.map((it, i) => (
+                <li key={it.name}>
+                  <span className="rank">{i + 1}</span>
+                  {label(it.name)} <b>{it.text}</b>
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
+        <p className={`map-top-title${extraTop ? ' gap' : ''}`}>Top 3 Regions ({unit})</p>
         <ol className="map-top">
           {ranked.slice(0, 3).map(([n, v], i) => (
             <li key={n}>

@@ -23,7 +23,10 @@ const rows = [...byRegion].sort((a, b) => b.ratio - a.ratio)
 
 // 지도용. byRegion 은 REGIONS 와 같은 순서라 그대로 뽑아 쓴다.
 const winVals = byRegion.map((r) => r.wins)
-const winRank = [...byRegion].sort((a, b) => b.wins - a.wins || b.shops - a.shops)
+// 표는 1등 배출률(배출 ÷ 판매점) 높은 순. 같으면 배출 건수 많은 순
+const rate = (r) => (r.shops ? r.wins / r.shops : 0)
+const rateRank = [...byRegion].sort((a, b) => rate(b) - rate(a) || b.wins - a.wins)
+const rateTop3 = rateRank.slice(0, 3).map((r) => ({ name: r.name, text: `${(rate(r) * 100).toFixed(1)}%` }))
 // ±2σ 를 비율 단위로. 배출이 적은 지역일수록 넓다
 const half = (r) => (r.exp ? 2 / Math.sqrt(r.exp) : 0)
 
@@ -43,8 +46,9 @@ const fmtExp = (v) => (v < 0.05 ? '0.01곳 미만' : v < 1 ? `${v.toFixed(1)}곳
 export default function RegionStats() {
   const [sel, setSel] = useState(null)
   return (
+    <>
     <div className="card full" id="sec-region">
-      <h2><Icon name="map" />지역별 1등 배출<small>판매점 수 보정</small></h2>
+      <h2><Icon name="map" />지역별 1등 배출</h2>
 
       {/* 1단계 — 지도는 "경기·서울이 명당인가?" 라는 착시를 일부러 만든다.
           아래 forest plot 이 그걸 깬다.
@@ -52,14 +56,14 @@ export default function RegionStats() {
           비교로 읽히기 전에 "잘못 그려진 것 아닌가" 로 먼저 읽혔다. 판매점과
           같이 움직인다는 근거는 아래 forest plot 의 각 행(N건 / 판매점 N곳)에
           이미 다 있으므로 지도는 한 장만 둔다. */}
-      <KoreaMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" selected={sel} onSelect={setSel}>
+      <KoreaMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" selected={sel} onSelect={setSel} extraTop={{ title: 'Top 3 Regions (%)', items: rateTop3 }}>
         <div className="region-table-wrap">
           <table className="region-table">
             <thead>
               <tr><th>순위</th><th>지역</th><th className="num">1등 배출</th><th className="num">판매점</th><th className="num" title="1등 배출 건수 ÷ 판매점 수">1등 배출률</th></tr>
             </thead>
             <tbody>
-              {winRank.map((r, i) => {
+              {rateRank.map((r, i) => {
                 const on = sel === r.name
                 const pick = () => setSel(on ? null : r.name)
                 return (
@@ -73,9 +77,9 @@ export default function RegionStats() {
                   >
                     <td>{i + 1}</td>
                     <td>{label(r.name)}</td>
-                    <td className="num strong">{r.wins}건</td>
+                    <td className="num">{r.wins}건</td>
                     <td className="num">{r.shops.toLocaleString()}곳</td>
-                    <td className="num">{((r.wins / r.shops) * 100).toFixed(1)}%</td>
+                    <td className="num strong">{(rate(r) * 100).toFixed(1)}%</td>
                   </tr>
                 )
               })}
@@ -88,11 +92,16 @@ export default function RegionStats() {
         표기 참고
         <ul className="hint-list">
           <li>원의 넓이가 값을 나타냄</li>
-          <li>1등 배출률 = 1등 배출 건수 ÷ 판매점 수 (복권 한 장의 1등 확률은 어디서 사든 같음)</li>
+          <li>1등 배출률 = 1등 배출 건수 ÷ 판매점 수</li>
           <li>울릉도·독도 등 작은 섬은 생략</li>
           <li>전남과 광주는 원본 데이터가 통합 표기여서 하나로 묶음</li>
         </ul>
       </div>
+
+    </div>
+
+    <div className="card full" id="sec-expect">
+      <h2><Icon name="sigma" />기대치 분석<small>판매점 수 보정</small></h2>
 
       <svg
         viewBox={`0 0 ${W} ${H}`}
@@ -110,7 +119,7 @@ export default function RegionStats() {
           opacity={0.35}
         />
         <text className="noise-cap" x={sx(1)} y={TOP_PAD - 14} textAnchor="middle">
-          판매점 수만큼
+          기대치 (판매점 수 비례)
         </text>
         {ticks.map((t) => (
           <text key={t} className="noise-tick" x={sx(t)} y={H - 14} textAnchor="middle">
@@ -143,11 +152,6 @@ export default function RegionStats() {
         })}
       </svg>
 
-      <div className="stat">
-        <span>무작위 기대 범위(±2σ) 안에 든 지역</span>
-        <b>{within2} / 16개</b>
-      </div>
-
       <div className="hint">
         <ul className="hint-list">
           <li>1등(자동) {totals.winTotal}건, 전국 판매점 {totals.shopTotal.toLocaleString()}곳 기준.</li>
@@ -158,10 +162,12 @@ export default function RegionStats() {
         </ul>
       </div>
 
-      <h2 style={{ marginTop: 28 }} id="sec-store" className="anchor">
+    </div>
+
+    <div className="card full" id="sec-store">
+      <h2>
         <Icon name="store" />
         명당 분석
-        <small>판매점 한 곳이 여러 번 배출할 확률</small>
       </h2>
 
       {storeHist.map((h) => (
@@ -208,5 +214,6 @@ export default function RegionStats() {
         </ul>
       </div>
     </div>
+    </>
   )
 }
