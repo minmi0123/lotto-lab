@@ -77,7 +77,7 @@ export default function HotCold() {
       <h2><Icon name="eye" />핫·콜드 분석</h2>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="noise" role="img"
-        aria-label={`45개 번호의 출현 횟수 분포. 평균 ${freqMean.toFixed(1)}회, 무작위 기대 변동폭 1σ ±${freqSd.toFixed(1)}회. 최다 ${Math.max(...freq.slice(1))}회, 최소 ${Math.min(...freq.slice(1))}회로 ${within2}/45개가 ±2σ 안에 있음.`}>
+        aria-label={`45개 번호의 출현 횟수 분포. 평균 ${freqMean.toFixed(1)}회, 무작위 기대 변동폭 1σ ±${freqSd.toFixed(2)}회. 최다 ${Math.max(...freq.slice(1))}회, 최소 ${Math.min(...freq.slice(1))}회로 ${within2}/45개가 ±2σ 안에 있음.`}>
         {/* 무작위로 뽑아도 생기는 변동폭. 바깥 띠 95%(±2σ), 안쪽 띠 68%(±1σ) */}
         <rect x={sx(freqMean - 2 * freqSd)} y={18} width={sx(freqMean + 2 * freqSd) - sx(freqMean - 2 * freqSd)}
           height={axisY - 18} rx={4} fill={BAND} opacity={0.05} />
@@ -139,17 +139,17 @@ export default function HotCold() {
         />
         <HelpStat
           label="무작위로 뽑아도 생기는 변동폭"
-          value={`±${freqSd.toFixed(1)}회`}
+          value={`±${freqSd.toFixed(2)}회`}
           help={<>
             {totalRounds}회 동안 매번 6개를 무작위로 뽑으면 번호 하나의 평균 출현은 {freqMean.toFixed(1)}회다.
-            실제 출현 횟수는 이 평균에서 위아래로 흔들리며, 그 흔들림의 표준 크기(표준편차, 1σ)가 ±{freqSd.toFixed(1)}회다.
-            무작위라면 번호의 약 68%가 평균 ±{freqSd.toFixed(1)}회({(freqMean - freqSd).toFixed(1)}~{(freqMean + freqSd).toFixed(1)}회) 안에 든다.
+            실제 출현 횟수는 이 평균에서 위아래로 흔들리며, 그 흔들림의 표준 크기(표준편차, 1σ)가 ±{freqSd.toFixed(2)}회다.
+            무작위라면 번호의 약 68%가 평균 ±{freqSd.toFixed(2)}회({(freqMean - freqSd).toFixed(1)}~{(freqMean + freqSd).toFixed(1)}회) 안에 든다.
             <div className="help-easy">
               <b>쉬운 설명</b>
               {totalRounds}회 동안 6개씩 뽑는다고 가정했을 때, 한 번호당 평균 {freqMean.toFixed(1)}회 나와야 합니다.
               하지만 공정하게 뽑아도 딱 {Math.round(freqMean)}회로 맞지 않습니다.
               (동전을 100번 던져도 정확히 앞면 50번이 나오는 경우는 드문 것과 같은 원리입니다.)
-              이 정도는 위아래로 흔들리는 게 정상이라는 폭이 ±{freqSd.toFixed(1)}회입니다.
+              이 정도는 위아래로 흔들리는 게 정상이라는 폭이 ±{freqSd.toFixed(2)}회입니다.
             </div>
           </>}
         />
