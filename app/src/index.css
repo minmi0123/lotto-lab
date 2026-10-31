@@ -280,7 +280,7 @@ a:hover{color:var(--primary-active);}
    넘어가므로 폭을 묶어 두고 남는 가로를 옆 칸이 쓴다. */
 .koreamap{
   display:grid;
-  grid-template-columns:minmax(0,480px) max-content minmax(280px,340px);
+  grid-template-columns:minmax(0,480px) max-content minmax(330px,390px);
   justify-content:start;
   align-items:center;
   gap:40px;

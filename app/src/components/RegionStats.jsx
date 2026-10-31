@@ -56,7 +56,7 @@ export default function RegionStats() {
         <div className="region-table-wrap">
           <table className="region-table">
             <thead>
-              <tr><th>순위</th><th>지역</th><th className="num">1등 배출</th><th className="num">판매점</th></tr>
+              <tr><th>순위</th><th>지역</th><th className="num">1등 배출</th><th className="num">판매점</th><th className="num" title="1등 배출 건수 ÷ 판매점 수">1등 배출률</th></tr>
             </thead>
             <tbody>
               {winRank.map((r, i) => {
@@ -75,6 +75,7 @@ export default function RegionStats() {
                     <td>{label(r.name)}</td>
                     <td className="num strong">{r.wins}건</td>
                     <td className="num">{r.shops.toLocaleString()}곳</td>
+                    <td className="num">{((r.wins / r.shops) * 100).toFixed(1)}%</td>
                   </tr>
                 )
               })}
@@ -87,6 +88,7 @@ export default function RegionStats() {
         표기 참고
         <ul className="hint-list">
           <li>원의 넓이가 값을 나타냄</li>
+          <li>1등 배출률 = 1등 배출 건수 ÷ 판매점 수 (복권 한 장의 1등 확률은 어디서 사든 같음)</li>
           <li>울릉도·독도 등 작은 섬은 생략</li>
           <li>전남과 광주는 원본 데이터가 통합 표기여서 하나로 묶음</li>
         </ul>
