@@ -192,9 +192,9 @@ select:focus,input:focus{outline:none;border-color:var(--primary);}
 .region-table tbody tr.on td{color:#8ec5ff;}
 .map-pick{cursor:pointer;}
 .region-table td{padding:8px 10px;border-bottom:1px solid var(--hairline);font-variant-numeric:tabular-nums;}
-.region-table th:first-child,.region-table td:first-child{width:56px;color:var(--muted);}
-.region-table th:last-child,.region-table td:last-child{text-align:right;color:var(--ink);font-weight:600;}
-.region-table th:last-child{color:var(--muted);font-weight:500;}
+.region-table th:first-child,.region-table td:first-child{width:44px;color:var(--muted);}
+.region-table .num{text-align:right;white-space:nowrap;}
+.region-table td.strong{color:var(--ink);font-weight:600;}
 .hint-list{margin:6px 0 0;padding-left:18px;}
 .hint-list li{margin:2px 0;}
 
@@ -260,7 +260,7 @@ a:hover{color:var(--primary-active);}
    넘어가므로 폭을 묶어 두고 남는 가로를 옆 칸이 쓴다. */
 .koreamap{
   display:grid;
-  grid-template-columns:minmax(0,480px) max-content minmax(220px,300px);
+  grid-template-columns:minmax(0,480px) max-content minmax(280px,340px);
   justify-content:start;
   align-items:center;
   gap:40px;

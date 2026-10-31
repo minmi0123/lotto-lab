@@ -56,7 +56,7 @@ export default function RegionStats() {
         <div className="region-table-wrap">
           <table className="region-table">
             <thead>
-              <tr><th>순위</th><th>지역</th><th>1등 배출</th></tr>
+              <tr><th>순위</th><th>지역</th><th className="num">1등 배출</th><th className="num">판매점</th></tr>
             </thead>
             <tbody>
               {winRank.map((r, i) => {
@@ -73,7 +73,8 @@ export default function RegionStats() {
                   >
                     <td>{i + 1}</td>
                     <td>{label(r.name)}</td>
-                    <td>{r.wins}건</td>
+                    <td className="num strong">{r.wins}건</td>
+                    <td className="num">{r.shops.toLocaleString()}곳</td>
                   </tr>
                 )
               })}
