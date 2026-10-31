@@ -306,7 +306,7 @@ a:hover{color:var(--primary-active);}
 .map-top b{color:var(--body-strong);font-weight:600;font-variant-numeric:tabular-nums;}
 .map-top .rank{width:20px;height:20px;font-size:11px;}
 
-/* ---------- 착시 코너 / forest plot ---------- */
+/* ---------- 핫·콜드 분석 / forest plot ---------- */
 .noise{width:100%;height:auto;display:block;margin:4px 0 8px;overflow:visible;}
 .noise circle{transition:r .12s ease;}
 .noise circle:hover{r:6.5;}

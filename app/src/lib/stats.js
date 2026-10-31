@@ -3,6 +3,12 @@ import { DATA } from '../data/lottoData.js'
 export const totalRounds = DATA.length
 export const latest = DATA[DATA.length - 1]
 
+// 추첨일. 1회(2002-12-07)부터 매주 토요일 한 번씩이라 회차로 계산된다.
+// 1회·1000회·1243~1247회를 동행복권 응답 날짜와 대조해 맞음을 확인했다 (2026-10-31).
+const FIRST_DRAW = Date.UTC(2002, 11, 7)
+export const drawDate = (round) =>
+  new Date(FIRST_DRAW + (round - 1) * 7 * 864e5).toISOString().slice(0, 10)
+
 // 번호별 누적 출현 빈도
 export const freq = new Array(46).fill(0)
 export const bonusFreq = new Array(46).fill(0)

@@ -11,7 +11,7 @@ const SECTIONS = [
   { id: 'sec-store', label: '명당 분석' },
   { id: 'sec-latest', label: '최신 회차' },
   { id: 'sec-freq', label: '번호별 출현 빈도' },
-  { id: 'sec-hotcold', label: '착시 코너' },
+  { id: 'sec-hotcold', label: '핫·콜드 분석' },
   { id: 'sec-stats', label: '한눈에 보는 통계' },
   { id: 'sec-hall', label: '명예의 전당' },
 ]

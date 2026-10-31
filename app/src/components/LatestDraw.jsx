@@ -1,6 +1,6 @@
 import Ball from './Ball.jsx'
 import Icon from './Icon.jsx'
-import { latest } from '../lib/stats.js'
+import { latest, drawDate } from '../lib/stats.js'
 
 export default function LatestDraw() {
   return (
@@ -9,7 +9,7 @@ export default function LatestDraw() {
         <Icon name="clock" />
         최신 회차
         <small>
-          {latest.round}회 · 1등 {latest.c1}명 · {(latest.w1 / 1e8).toFixed(1)}억원
+          {latest.round}회 · {drawDate(latest.round)} · 1등 {latest.c1}명 · {(latest.w1 / 1e8).toFixed(1)}억원
         </small>
       </h2>
       <div className="balls">

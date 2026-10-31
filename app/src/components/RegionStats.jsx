@@ -158,7 +158,7 @@ export default function RegionStats() {
 
       <h2 style={{ marginTop: 28 }} id="sec-store" className="anchor">
         <Icon name="store" />
-        &lsquo;명당&rsquo;은 있을까
+        명당 분석
         <small>판매점 한 곳이 여러 번 배출할 확률</small>
       </h2>
 
