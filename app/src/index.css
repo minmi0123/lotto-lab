@@ -181,6 +181,16 @@ select:focus,input:focus{outline:none;border-color:var(--primary);}
 .stat b.pos{color:var(--emerald);}
 .stat b.neg{color:var(--rose);}
 
+/* 지역별 1등 배출 표 */
+.region-table{width:100%;max-width:420px;border-collapse:collapse;margin-top:16px;font-size:14px;color:var(--body);}
+.region-table th{text-align:left;font-weight:500;color:var(--muted);font-size:13px;padding:8px 10px;border-bottom:1px solid var(--hairline-strong);}
+.region-table td{padding:8px 10px;border-bottom:1px solid var(--hairline);font-variant-numeric:tabular-nums;}
+.region-table th:first-child,.region-table td:first-child{width:56px;color:var(--muted);}
+.region-table th:last-child,.region-table td:last-child{text-align:right;color:var(--ink);font-weight:600;}
+.region-table th:last-child{color:var(--muted);font-weight:500;}
+.hint-list{margin:6px 0 0;padding-left:18px;}
+.hint-list li{margin:2px 0;}
+
 /* ---------- 보조 텍스트 ---------- */
 .hint{color:var(--muted);font-size:13px;margin-top:16px;line-height:1.65;max-width:82ch;}
 .hint b{color:var(--body-strong);font-weight:600;}

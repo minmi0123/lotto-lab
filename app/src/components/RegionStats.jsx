@@ -22,34 +22,7 @@ const rows = [...byRegion].sort((a, b) => b.ratio - a.ratio)
 
 // 지도용. byRegion 은 REGIONS 와 같은 순서라 그대로 뽑아 쓴다.
 const winVals = byRegion.map((r) => r.wins)
-const shopVals = byRegion.map((r) => r.shops)
-// 배출과 판매점이 얼마나 같이 움직이는지 — 순위 상관(스피어만)으로 재서 글로 말해준다.
-// 배출 건수엔 동점이 많다(20건이 3곳, 23건이 2곳). 동점에 임의 순위를 주면
-// 값이 흔들리므로 평균 순위를 매기고, 그 위에서 피어슨을 구한다.
-const spearman = (() => {
-  const rank = (vals) => {
-    const idx = vals.map((v, i) => [v, i]).sort((a, b) => b[0] - a[0])
-    const out = new Array(vals.length)
-    let i = 0
-    while (i < idx.length) {
-      let j = i
-      while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++
-      const avg = (i + j) / 2 + 1
-      for (let k = i; k <= j; k++) out[idx[k][1]] = avg
-      i = j + 1
-    }
-    return out
-  }
-  const a = rank(winVals),
-    b = rank(shopVals)
-  const mean = (x) => x.reduce((p, c) => p + c, 0) / x.length
-  const ma = mean(a),
-    mb = mean(b)
-  const cov = a.reduce((s, v, i) => s + (v - ma) * (b[i] - mb), 0)
-  const sa = Math.sqrt(a.reduce((s, v) => s + (v - ma) ** 2, 0))
-  const sb = Math.sqrt(b.reduce((s, v) => s + (v - mb) ** 2, 0))
-  return sa && sb ? cov / (sa * sb) : 0
-})()
+const winRank = [...byRegion].sort((a, b) => b.wins - a.wins || b.shops - a.shops)
 // ±2σ 를 비율 단위로. 배출이 적은 지역일수록 넓다
 const half = (r) => (r.exp ? 2 / Math.sqrt(r.exp) : 0)
 
@@ -79,13 +52,28 @@ export default function RegionStats() {
           이미 다 있으므로 지도는 한 장만 둔다. */}
       <KoreaMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" />
 
+      <table className="region-table">
+        <thead>
+          <tr><th>순위</th><th>지역</th><th>1등 배출</th></tr>
+        </thead>
+        <tbody>
+          {winRank.map((r, i) => (
+            <tr key={r.name}>
+              <td>{i + 1}</td>
+              <td>{label(r.name)}</td>
+              <td>{r.wins}건</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       <div className="hint" style={{ marginTop: 12 }}>
-        <b>수도권이 압도적으로 보인다.</b> 경기 {byRegion[1].wins}건, 서울 {byRegion[0].wins}건이다.
-        그러나 판매점 수도 경기 {byRegion[1].shops.toLocaleString()}곳, 서울 {byRegion[0].shops.toLocaleString()}곳으로 가장 많다.
-        16개 시도의 배출 순위와 판매점 순위의 상관계수는 {spearman.toFixed(2)}이다(1.00이면 완전히 같은 순서).
-        판매량이 많은 지역에서 1등이 많이 나올 뿐이며 지역의 운과는 관계가 없다. 아래 그래프는 배출 건수를 판매점 수로 나누어 다시 비교한 것이다.
-        {' '}<span className="mini">(원의 넓이가 값을 나타낸다. 제주는 실제보다 위쪽에 배치했고
-        울릉도·독도 등 작은 섬은 생략했다. 전남과 광주는 원본 데이터가 통합 표기여서 하나로 묶었다.)</span>
+        표기 참고
+        <ul className="hint-list">
+          <li>원의 넓이가 값을 나타냄</li>
+          <li>울릉도·독도 등 작은 섬은 생략</li>
+          <li>전남과 광주는 원본 데이터가 통합 표기여서 하나로 묶음</li>
+        </ul>
       </div>
 
       <svg
