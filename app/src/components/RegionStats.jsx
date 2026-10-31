@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Icon from './Icon.jsx'
 import KoreaMap from './KoreaMap.jsx'
-import { regions, label, byRegion, within2, outliers, storeHist, multi, totals, top, online, meta } from '../lib/regionStats.js'
+import { regions, label, byRegion, within2, outliers, storeHist, multi, totals, top, online } from '../lib/regionStats.js'
 
 // forest plot. 가로축은 "판매점 수에 비례했을 때의 기대 배출" 대비 비율이라
 // 1.0 이 기준선이고, 가로 막대는 무작위로도 생기는 변동폭(±2σ)이다.
@@ -147,30 +147,20 @@ export default function RegionStats() {
       </div>
 
       <div className="hint">
-        1등(자동) {totals.winTotal}건, 전국 판매점 {totals.shopTotal.toLocaleString()}곳 기준이다.{' '}
-        {outliers.length === 0 ? (
-          <>
-            <b>기대 범위를 벗어난 지역은 없다.</b> 지역별 1등 배출 건수는 해당 지역의 판매점 수로
-            대부분 설명된다. 배출 1·2위인 경기·서울은 판매점 수도 1·2위다.
-          </>
-        ) : (
-          <>
-            기대 범위를 벗어난 지역: <b>{outliers.map((r) => label(r.name)).join(', ')}</b>. 다만 16개
-            지역을 동시에 검사하면 무작위로도 평균 0.7개 정도는 ±2σ 밖으로 나간다.
-          </>
-        )}
+        <ul className="hint-list">
+          <li>1등(자동) {totals.winTotal}건, 전국 판매점 {totals.shopTotal.toLocaleString()}곳 기준.</li>
+          <li>(참고) 배출 1·2위인 경기·서울은 판매점 수도 1·2위.</li>
+          {outliers.length > 0 && (
+            <li>(참고) 기대 범위를 벗어난 지역: {outliers.map((r) => label(r.name)).join(', ')}.</li>
+          )}
+        </ul>
       </div>
 
-      <h2 style={{ marginTop: 28 }}>
+      <h2 style={{ marginTop: 28 }} id="sec-store" className="anchor">
         <Icon name="store" />
         &lsquo;명당&rsquo;은 있을까
         <small>판매점 한 곳이 여러 번 배출할 확률</small>
       </h2>
-
-      <div className="hint" style={{ marginTop: 0, marginBottom: 12 }}>
-        모든 판매점의 판매량이 같다면 한 곳에서 1년에 1등이 여러 번 나오는 일은 거의 없어야 한다.
-        아래는 실제 집계와 그 기대값이다.
-      </div>
 
       {storeHist.map((h) => (
         <div className="stat" key={h.k}>
@@ -200,20 +190,20 @@ export default function RegionStats() {
       </div>
 
       <div className="hint">
-        <b>쏠림은 실제로 존재한다. 다만 원인은 &lsquo;기운&rsquo;이 아니다.</b> 3번 배출한 판매점은 {storeHist[2].observed}곳이지만
-        판매량이 모두 같다면 {storeHist[2].expected.toFixed(1)}곳이어야 한다. 이 정도로 쏠린 원인은
-        판매점별 판매량 차이다. 많이 파는 판매점에서 1등도 많이 나온다. 또한
-        명당으로 소문이 나면 손님이 몰려 판매량이 늘고 다시 1등이 나온다. 인과의 순서가 반대다.
-        <b> 그 판매점에서 산다고 복권 한 장의 당첨 확률이 올라가지는 않는다.</b>
-      </div>
-
-      <div className="hint">
-        출처: 공공데이터포털 <a href="https://www.data.go.kr/data/15059963/fileData.do" target="_blank" rel="noreferrer">온라인복권 1등 당첨 판매점 현황</a>,{' '}
-        <a href="https://www.data.go.kr/data/15086355/fileData.do" target="_blank" rel="noreferrer">복권판매점 목록</a> (기획예산처, 이용허락범위 제한 없음).
-        원본에는 <b>1등 &lsquo;자동 선택&rsquo;만</b> 포함되어 수동 1등은 빠져 있다. 집계 기간은 최근 1년이며
-        자료 수집일은 {meta.asof}이다. 인터넷 구매분 {online}건은 판매 지역이 없어 지역 통계에서 제외했다. 지도의 시도 경계는{' '}
-        <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noreferrer">Natural Earth</a>
-        {' '}(퍼블릭 도메인) 자료를 사용했다.
+        출처 및 참고사항
+        <ul className="hint-list">
+          <li>
+            공공데이터포털 <a href="https://www.data.go.kr/data/15059963/fileData.do" target="_blank" rel="noreferrer">온라인복권 1등 당첨 판매점 현황</a>,{' '}
+            <a href="https://www.data.go.kr/data/15086355/fileData.do" target="_blank" rel="noreferrer">복권판매점 목록</a> (기획예산처, 이용허락범위 제한 없음).
+          </li>
+          <li>자동 데이터 기준 (수동은 데이터 미제공).</li>
+          <li>인터넷 구매분 {online}건은 판매 지역이 없어 지역 통계에서 제외.</li>
+          <li>
+            지도의 시도 경계는{' '}
+            <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noreferrer">Natural Earth</a>
+            {' '}(퍼블릭 도메인) 사용.
+          </li>
+        </ul>
       </div>
     </div>
   )

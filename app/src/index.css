@@ -98,6 +98,26 @@ h1{
 .nav a:hover{color:var(--body-strong);background:var(--surface-soft);}
 .nav a.active{background:var(--surface-card);color:var(--ink);}
 
+/* ---------- 소제목 탭: 포인트 바 바로 아래에 붙어 따라온다 ---------- */
+:root{--ptbar-h:61px;--sectabs-h:49px;}
+.sectabs{
+  position:sticky;top:var(--ptbar-h);z-index:29;
+  display:flex;gap:4px;overflow-x:auto;
+  margin:-16px 0 24px;padding:8px 0;
+  background:var(--canvas);border-bottom:1px solid var(--hairline);
+  scrollbar-width:none;
+}
+.sectabs::-webkit-scrollbar{display:none;}
+.sectabs button{
+  flex:none;white-space:nowrap;cursor:pointer;
+  font-size:13px;font-weight:500;line-height:1.4;
+  color:var(--muted);background:transparent;border:none;
+  padding:7px 12px;min-height:32px;border-radius:var(--r-sm);
+}
+.sectabs button:hover{color:var(--body-strong);background:var(--surface-soft);}
+.sectabs button.on{color:var(--ink);background:var(--surface-card);}
+.anchor{scroll-margin-top:calc(var(--ptbar-h) + var(--sectabs-h) + 16px);}
+
 /* ---------- 카드 ---------- */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .card{
@@ -105,7 +125,7 @@ h1{
   border:1px solid var(--hairline);
   border-radius:var(--r-lg);
   padding:32px;
-  scroll-margin-top:88px;
+  scroll-margin-top:calc(var(--ptbar-h) + var(--sectabs-h) + 16px);
 }
 .card.full{grid-column:1/-1;}
 .card h2{
@@ -314,6 +334,7 @@ a:hover{color:var(--primary-active);}
   .lead{font-size:15px;margin-bottom:24px;}
   .card{padding:20px;}
   .card h2{font-size:17px;margin-bottom:16px;}
+  :root{--ptbar-h:51px;}
   .ptbar{padding:12px 0;margin-bottom:20px;}
   .ptbar .pt{font-size:26px;}
   .ptbar .note{font-size:12px;}
