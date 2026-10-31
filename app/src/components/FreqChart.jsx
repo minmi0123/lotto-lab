@@ -58,7 +58,7 @@ export default function FreqChart() {
         style={{ width: '100%', height: 'auto', display: 'block', cursor: 'pointer' }}
       />
       <div className="hint">
-        막대를 클릭하면 해당 번호의 상세 통계를 볼 수 있어요. 색은 실제 로또 공 색상 기준(노랑1-10 / 파랑11-20 / 빨강21-30 / 회색31-40 / 초록41-45).
+        막대를 클릭하면 해당 번호의 상세 통계가 나타난다. 막대 색은 실제 로또 공 색상을 따른다(노랑1-10 / 파랑11-20 / 빨강21-30 / 회색31-40 / 초록41-45).
       </div>
       {sel != null && (
         <div className="res">

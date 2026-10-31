@@ -138,7 +138,7 @@ export default function Analyzer({ initialNums }) {
 
   return (
     <div className="card full" id="sec-analyze" ref={cardRef}>
-      <h2><Icon name="target" />내 번호 분석 &amp; 시뮬레이터<small>한 세트로 둘 다</small></h2>
+      <h2><Icon name="target" />내 번호 분석 &amp; 시뮬레이터<small>번호 한 세트로 분석과 시뮬레이션</small></h2>
 
       <div className="row">
         {nums.map((v, i) => (
@@ -188,7 +188,7 @@ export default function Analyzer({ initialNums }) {
       <div className="row" style={{ marginTop: 12 }}>
         <button className="primary" onClick={run}><Icon name="play" size={16} />실행</button>
         <span className="mini">
-          {mode === 'sim' ? '이 번호로 꾸준히 샀다면 수익을 계산합니다' : '역대 당첨 이력과 내 번호를 비교합니다'}
+          {mode === 'sim' ? '이 번호로 매주 구매했을 때의 손익을 계산한다' : '내 번호를 역대 당첨번호와 비교한다'}
         </span>
       </div>
 
@@ -198,7 +198,7 @@ export default function Analyzer({ initialNums }) {
 
       {mode === 'sim' && (
         <div className="hint">
-          매 회차 같은 번호로 (주당금액÷1,000)장씩 샀다고 가정합니다. 1·2등은 회차별 실제값, 3등 150만·4등 5만·5등 5천원은 통상 근사값이에요.
+          매 회차 같은 번호를 (주당금액÷1,000)장씩 구매했다고 가정한다. 1·2등은 회차별 실제 당첨금이고 3등 150만·4등 5만·5등 5천원은 통상 근사값이다.
         </div>
       )}
     </div>
@@ -214,7 +214,7 @@ function AnalyzeView({ mine, a }) {
           역대 최고 {gName[a.best.grade]} 적중 이력 <span className="mini">({a.best.round}회차 기준)</span>
         </div>
       ) : (
-        <div className="grade g0">아쉽게도 역대에 3등 이상 적중한 적은 없어요.</div>
+        <div className="grade g0">역대 회차 중 5등 이상 당첨된 적이 없다.</div>
       )}
       <div className="balls" style={{ margin: '14px 0' }}>
         {mine.map((n, i) => (
@@ -227,7 +227,7 @@ function AnalyzeView({ mine, a }) {
       <div className="hint">각 번호 출현: {mine.map((n) => <span className="tag" key={n} style={{ marginRight: 4 }}>{n}번 {freq[n]}회</span>)}</div>
       <div className="hint" style={{ marginTop: 20, color: 'var(--body-strong)', display: 'flex', alignItems: 'center', gap: 7 }}>
         <Icon name="calendar" size={15} />
-        내 번호와 가장 닮았던 역대 회차 TOP 3 <span className="mini">(겹친 번호만 진하게)</span>
+        내 번호와 가장 많이 겹친 역대 회차 TOP 3 <span className="mini">(겹친 번호만 진하게 표시)</span>
       </div>
       {a.top3.map((sm) => (
         <div className="row" key={sm.d.round} style={{ gap: 10, marginTop: 10, alignItems: 'center' }}>
@@ -265,10 +265,10 @@ function SimView({ mine, s }) {
       <div className="stat"><span>당첨 횟수</span><b>1등 {s.cnt[1]} · 2등 {s.cnt[2]} · 3등 {s.cnt[3]} · 4등 {s.cnt[4]} · 5등 {s.cnt[5]}</b></div>
       {s.best.d ? (
         <div className="hint">
-          최고의 순간: <b>{s.best.d.round}회 {gName[s.best.g]}</b> 당첨 ({won(s.best.pz * s.games)}원)
+          최고 당첨: <b>{s.best.d.round}회 {gName[s.best.g]}</b> 당첨 ({won(s.best.pz * s.games)}원)
         </div>
       ) : (
-        <div className="hint">아쉽게도 이 기간엔 당첨이 없었어요.</div>
+        <div className="hint">이 기간에는 당첨 내역이 없다.</div>
       )}
     </div>
   )

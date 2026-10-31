@@ -23,7 +23,7 @@ export default function Header({ balance }) {
       </span>
       <span className="note">
         <Icon name="slot" size={14} />
-        스핀을 돌려 포인트를 불려보세요
+        슬롯 게임 보유 포인트
       </span>
     </div>
   )

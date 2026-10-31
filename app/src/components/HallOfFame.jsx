@@ -29,7 +29,7 @@ const RANKINGS = {
   lowPrize: {
     icon: 'split',
     btn: '최소 당첨금',
-    title: '1등 1인당 최소 당첨금 (많이 나눠가짐)',
+    title: '1등 1인당 최소 당첨금 (당첨자가 많아 나눈 회차)',
     list: [...DATA].filter((d) => d.w1 > 0).sort((a, b) => a.w1 - b.w1).slice(0, 5),
     val: (d) => `${won(d.w1)}원`,
     sub: (d) => `1등 ${d.c1}명`,

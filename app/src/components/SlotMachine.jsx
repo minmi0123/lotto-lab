@@ -73,7 +73,7 @@ export default function SlotMachine() {
       <h2>
         <Icon name="slot" />
         로또 슬롯
-        <small>역대 회차와 겨뤄 포인트를 불려요 (1회 -{SPIN_COST}pt)</small>
+        <small>게임용 확률표로 추첨해 포인트를 얻는다 (1회 -{SPIN_COST}pt)</small>
       </h2>
 
       {/* 모드 토글 */}
@@ -85,7 +85,7 @@ export default function SlotMachine() {
           className={mode === 'mine' ? 'on' : ''}
           onClick={() => (myNumbers ? setMode('mine') : navigate('/analyze'))}
           disabled={spinning}
-          title={myNumbers ? '' : '생성기·추천에서 번호를 먼저 골라오세요'}
+          title={myNumbers ? '' : '분석·시뮬 페이지의 생성기에서 번호를 먼저 골라야 한다'}
         >
           <Icon name="star" size={16} />내 번호
         </button>
@@ -109,7 +109,7 @@ export default function SlotMachine() {
       )}
       {mode === 'mine' && !useMine && (
         <div className="row" style={{ justifyContent: 'center', marginBottom: 8 }}>
-          <span className="mini">고정된 번호가 없어요. <a href="#/analyze" onClick={(e) => { e.preventDefault(); navigate('/analyze') }}>생성기·추천에서 고르기</a></span>
+          <span className="mini">고정된 번호가 없다. <a href="#/analyze" onClick={(e) => { e.preventDefault(); navigate('/analyze') }}>생성기에서 고르기</a></span>
         </div>
       )}
 
@@ -142,7 +142,7 @@ export default function SlotMachine() {
           <button className="primary" onClick={refill}>
             {/* 잔액이 0 이 아니라 스핀 비용 미만일 때도 뜬다. "소진"이라고 하면
                 5pt 가 남아 있는데 0 이라고 말하는 셈이라 문구를 맞춘다 */}
-            <Icon name="refresh" size={16} />포인트가 부족해요! 무료 충전 받기 (+100pt)
+            <Icon name="refresh" size={16} />포인트 부족 · 무료 충전 (+100pt)
           </button>
         )}
       </div>
@@ -163,7 +163,7 @@ export default function SlotMachine() {
             </div>
           </div>
         ) : (
-          <span className="mini">{useMine ? '내 번호로 스핀을 돌려보세요' : '스핀을 돌려보세요'}</span>
+          <span className="mini">{useMine ? '고정한 내 번호로 추첨한다' : '스핀 버튼을 누르면 추첨이 시작된다'}</span>
         )}
       </div>
 
@@ -176,8 +176,7 @@ export default function SlotMachine() {
       <div className="hint">
         <Icon name="alert" size={15} />
         <span>
-          포인트는 재미용 가상 점수예요. 슬롯은 게임용 확률표(1등 1/8,000 등)로 추첨하며 실제 로또 확률과는 달라요.
-          {' '}스핀당 평균 약 -0.9pt로 천천히 닳고, 가끔 잭팟이 터집니다.
+          포인트는 재미용 가상 점수다. 슬롯은 게임용 확률표(1등 1/8,000 등)로 추첨하며 실제 로또 확률과 다르다.
         </span>
       </div>
     </div>

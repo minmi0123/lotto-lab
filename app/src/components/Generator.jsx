@@ -6,8 +6,8 @@ import { randomNumbers } from '../lib/scoring.js'
 
 const STRATS = [
   { key: 'random', label: '완전 랜덤', desc: '순수 무작위 6개' },
-  { key: 'balance', label: '합계 균형형', desc: '합계가 역대 평균대(약 130~145)에 들도록' },
-  { key: 'never', label: '미출현 궁합형', desc: '역대에 서로 함께 나온 적이 가장 적은 번호끼리 조합' },
+  { key: 'balance', label: '합계 균형형', desc: '합계가 역대 평균대(약 130~145)에 드는 조합' },
+  { key: 'never', label: '미출현 궁합형', desc: '역대에 함께 나온 횟수가 가장 적은 번호끼리 조합' },
 ]
 
 function generate(strategy) {
@@ -33,7 +33,7 @@ function generate(strategy) {
     }
     meta =
       `역대 동반출현 ${bestSc}회 (무작위 평균 약 ${avgPairScore}회)` +
-      (comboSet.has(nums.join('-')) ? ' · 이 조합은 과거에 나온 적 있어요' : ' · 6조합 자체도 역대 미출현')
+      (comboSet.has(nums.join('-')) ? ' · 과거에 당첨된 적 있는 조합' : ' · 6개 조합 자체도 역대 미출현')
   } else {
     nums = randomNumbers()
   }
@@ -52,7 +52,7 @@ export default function Generator({ onAnalyze, onSlot }) {
 
   return (
     <div className="card full" id="sec-gen">
-      <h2><Icon name="dice" />행운 번호 생성기<small>전략을 골라보세요</small></h2>
+      <h2><Icon name="dice" />행운 번호 생성기<small>전략 선택</small></h2>
       <div className="seg">
         {STRATS.map((s) => (
           <button key={s.key} className={strategy === s.key ? 'on' : ''} onClick={() => setStrategy(s.key)}>

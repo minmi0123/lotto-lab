@@ -64,12 +64,12 @@ const ticks = []
 for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) ticks.push(Math.round(t * 100) / 100)
 
 // 4번 배출의 기대값은 0.004곳이라 반올림하면 '0.0곳' 이 되어 뜻이 뭉개진다
-const fmtExp = (v) => (v < 0.05 ? '0.01곳도 안 된다' : v < 1 ? `${v.toFixed(1)}곳` : `${Math.round(v)}곳`)
+const fmtExp = (v) => (v < 0.05 ? '0.01곳 미만' : v < 1 ? `${v.toFixed(1)}곳` : `${Math.round(v)}곳`)
 
 export default function RegionStats() {
   return (
     <div className="card full" id="sec-region">
-      <h2><Icon name="map" />지역별 1등 배출<small>판매점 수로 보정해서</small></h2>
+      <h2><Icon name="map" />지역별 1등 배출<small>판매점 수 보정</small></h2>
 
       {/* 1단계 — 지도는 "경기·서울이 명당인가?" 라는 착시를 일부러 만든다.
           아래 forest plot 이 그걸 깬다.
@@ -80,12 +80,12 @@ export default function RegionStats() {
       <KoreaMap title="1등 배출 건수" regions={regions} values={winVals} unit="건" />
 
       <div className="hint" style={{ marginTop: 12 }}>
-        <b>수도권이 압도적으로 보인다.</b> 경기 {byRegion[1].wins}건, 서울 {byRegion[0].wins}건.
-        그런데 판매점도 경기 {byRegion[1].shops.toLocaleString()}곳, 서울 {byRegion[0].shops.toLocaleString()}곳으로 가장 많다.
-        16개 시도의 배출 순위와 판매점 순위는 {spearman.toFixed(2)}만큼 함께 움직인다(1.00이면 완전히 같은 순서).
-        많이 파니까 많이 나오는 것이지, 그 지역의 운이 좋은 게 아니다. 아래는 판매점 수로 나눠서 다시 본 것이다.
-        {' '}<span className="mini">(원 넓이가 값이다. 제주는 지면을 아끼려고 실제보다 위로 당겨 그렸고,
-        울릉도·독도 등 작은 섬은 생략했다. 전남과 광주는 원본이 통합 표기라 한 덩어리다.)</span>
+        <b>수도권이 압도적으로 보인다.</b> 경기 {byRegion[1].wins}건, 서울 {byRegion[0].wins}건이다.
+        그러나 판매점 수도 경기 {byRegion[1].shops.toLocaleString()}곳, 서울 {byRegion[0].shops.toLocaleString()}곳으로 가장 많다.
+        16개 시도의 배출 순위와 판매점 순위의 상관계수는 {spearman.toFixed(2)}이다(1.00이면 완전히 같은 순서).
+        판매량이 많은 지역에서 1등이 많이 나올 뿐이며 지역의 운과는 관계가 없다. 아래 그래프는 배출 건수를 판매점 수로 나누어 다시 비교한 것이다.
+        {' '}<span className="mini">(원의 넓이가 값을 나타낸다. 제주는 실제보다 위쪽에 배치했고
+        울릉도·독도 등 작은 섬은 생략했다. 전남과 광주는 원본 데이터가 통합 표기여서 하나로 묶었다.)</span>
       </div>
 
       <svg
@@ -143,17 +143,16 @@ export default function RegionStats() {
       </div>
 
       <div className="hint">
-        1등(자동) {totals.winTotal}건, 전국 판매점 {totals.shopTotal.toLocaleString()}곳 기준.{' '}
+        1등(자동) {totals.winTotal}건, 전국 판매점 {totals.shopTotal.toLocaleString()}곳 기준이다.{' '}
         {outliers.length === 0 ? (
           <>
-            <b>기대 범위를 벗어난 지역은 하나도 없다.</b> 어느 지역에서 1등이 많이 나오느냐는
-            그 지역에 판매점이 몇 곳 있느냐로 거의 다 설명된다. 배출 1·2위인 경기·서울은
-            판매점 수도 1·2위다.
+            <b>기대 범위를 벗어난 지역은 없다.</b> 지역별 1등 배출 건수는 해당 지역의 판매점 수로
+            대부분 설명된다. 배출 1·2위인 경기·서울은 판매점 수도 1·2위다.
           </>
         ) : (
           <>
-            기대 범위를 벗어난 지역은 <b>{outliers.map((r) => label(r.name)).join(', ')}</b>. 다만 16개
-            지역을 한꺼번에 재면 그중 0.7개쯤은 무작위로도 ±2σ 밖으로 나간다.
+            기대 범위를 벗어난 지역: <b>{outliers.map((r) => label(r.name)).join(', ')}</b>. 다만 16개
+            지역을 동시에 검사하면 무작위로도 평균 0.7개 정도는 ±2σ 밖으로 나간다.
           </>
         )}
       </div>
@@ -165,8 +164,8 @@ export default function RegionStats() {
       </h2>
 
       <div className="hint" style={{ marginTop: 0, marginBottom: 12 }}>
-        전국 판매점이 다 똑같이 판다면 한 곳이 1년에 여러 번 1등을 내는 일은 거의 없어야 한다.
-        실제와 견줘 보면:
+        모든 판매점의 판매량이 같다면 한 곳에서 1년에 1등이 여러 번 나오는 일은 거의 없어야 한다.
+        아래는 실제 집계와 그 기대값이다.
       </div>
 
       {storeHist.map((h) => (
@@ -175,7 +174,7 @@ export default function RegionStats() {
           <b>
             {h.observed}곳{' '}
             <span className="mini" style={{ fontWeight: 400 }}>
-              (다 똑같이 팔았다면 {fmtExp(h.expected)})
+              (판매량이 모두 같을 때 기대값 {fmtExp(h.expected)})
             </span>
           </b>
         </div>
@@ -197,21 +196,20 @@ export default function RegionStats() {
       </div>
 
       <div className="hint">
-        <b>쏠림은 진짜다. 다만 이유가 &lsquo;기운&rsquo;은 아니다.</b> 3번 배출한 곳이 {storeHist[2].observed}곳인데
-        모두 똑같이 팔았다면 {storeHist[2].expected.toFixed(1)}곳이어야 한다. 이만큼 쏠렸다는 건
-        판매점마다 파는 양이 크게 다르다는 뜻이다 — 많이 파는 가게가 많이 배출한다. 게다가
-        명당으로 소문나면 사람이 몰려 더 많이 팔고, 그래서 또 배출한다. 순서가 거꾸로다.
-        <b> 그 가게에서 산다고 내 한 장의 확률이 올라가지는 않는다.</b>
+        <b>쏠림은 실제로 존재한다. 다만 원인은 &lsquo;기운&rsquo;이 아니다.</b> 3번 배출한 판매점은 {storeHist[2].observed}곳이지만
+        판매량이 모두 같다면 {storeHist[2].expected.toFixed(1)}곳이어야 한다. 이 정도로 쏠린 원인은
+        판매점별 판매량 차이다. 많이 파는 판매점에서 1등도 많이 나온다. 또한
+        명당으로 소문이 나면 손님이 몰려 판매량이 늘고 다시 1등이 나온다. 인과의 순서가 반대다.
+        <b> 그 판매점에서 산다고 복권 한 장의 당첨 확률이 올라가지는 않는다.</b>
       </div>
 
       <div className="hint">
         출처: 공공데이터포털 <a href="https://www.data.go.kr/data/15059963/fileData.do" target="_blank" rel="noreferrer">온라인복권 1등 당첨 판매점 현황</a>,{' '}
         <a href="https://www.data.go.kr/data/15086355/fileData.do" target="_blank" rel="noreferrer">복권판매점 목록</a> (기획예산처, 이용허락범위 제한 없음).
-        원본이 <b>1등 &lsquo;자동 선택&rsquo;만</b> 담고 있어 수동 1등은 빠져 있고, 최근 1년치이며 연 1회 갱신된다
-        (내려받은 날 {meta.asof}). 인터넷 구매 {online}건은 판매점이 아닌데 동행복권 소재지인
-        서울 서초구로 기록돼 지역 통계에서 뺐다. 지도의 시도 경계는{' '}
+        원본에는 <b>1등 &lsquo;자동 선택&rsquo;만</b> 포함되어 수동 1등은 빠져 있다. 집계 기간은 최근 1년이며
+        자료 수집일은 {meta.asof}이다. 인터넷 구매분 {online}건은 판매 지역이 없어 지역 통계에서 제외했다. 지도의 시도 경계는{' '}
         <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noreferrer">Natural Earth</a>
-        {' '}(퍼블릭 도메인).
+        {' '}(퍼블릭 도메인) 자료를 사용했다.
       </div>
     </div>
   )

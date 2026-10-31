@@ -16,7 +16,7 @@ export const SLOT_TABLE = [
   { grade: 3, match: 5, bonus: false, reward: 900, prob: 1 / 600, label: '3등 (5개 일치)' },
   { grade: 4, match: 4, bonus: false, reward: 150, prob: 1 / 120, label: '4등 (4개 일치)' },
   { grade: 5, match: 3, bonus: false, reward: 25, prob: 1 / 18, label: '5등 (3개 일치)' },
-  { grade: 6, match: 2, bonus: false, reward: 5, prob: 1 / 5, label: '아쉽! (2개 일치)' },
+  { grade: 6, match: 2, bonus: false, reward: 5, prob: 1 / 5, label: '2개 일치' },
 ]
 
 function shuffle(arr) {

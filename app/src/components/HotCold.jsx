@@ -56,7 +56,7 @@ const gap = Math.max(...freq.slice(1)) - Math.min(...freq.slice(1))
 export default function HotCold() {
   return (
     <div className="card full" id="sec-hotcold">
-      <h2><Icon name="eye" />착시 코너<small>핫·콜드 넘버, 진짜 신호일까?</small></h2>
+      <h2><Icon name="eye" />착시 코너<small>핫·콜드 넘버에 의미가 있는가</small></h2>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="noise" role="img"
         aria-label={`45개 번호의 출현 횟수 분포. 평균 ${freqMean.toFixed(1)}회, 무작위 기대 변동폭 1σ ±${freqSd.toFixed(1)}회. 최다 ${Math.max(...freq.slice(1))}회, 최소 ${Math.min(...freq.slice(1))}회로 ${within2}/45개가 ±2σ 안에 있음.`}>
@@ -132,17 +132,16 @@ export default function HotCold() {
           <b className="pos">{splitHalf.coldLateRank}위</b>
         </div>
         <div className="stat">
-          <span>무작위라면 나와야 할 값</span><b>둘 다 {splitHalf.chance}위</b>
+          <span>무작위일 때 기대값</span><b>둘 다 {splitHalf.chance}위</b>
         </div>
       </div>
 
       <div className="hint">
-        45개를 줄 세우면 1등과 꼴찌는 <b>반드시</b> 생깁니다. {totalRounds}회를 완전 무작위로 뽑아도 번호마다
-        ±{freqSd.toFixed(1)}회쯤 흔들립니다. 45개 중 {within2}개가 무작위 기대 범위(±2σ) 안에 들어와 있으니
-        지금의 {gap}회 격차는 잡음이에요.
-        {' '}실제로 전반 {splitHalf.half}회의 핫넘버는 후반에 평균 {splitHalf.hotLateRank}위로 <b>오히려 내려갔고</b>,
-        콜드넘버가 {splitHalf.coldLateRank}위로 올라왔습니다. 즉 <b>과거 출현 빈도에는 예측력이 없습니다.</b>
-        {' '}그래서 이 앱은 핫/콜드로 번호를 밀어주지 않아요.
+        번호 45개를 출현 횟수로 줄 세우면 1위와 꼴찌는 <b>반드시</b> 생긴다. {totalRounds}회를 완전 무작위로 뽑아도
+        번호마다 ±{freqSd.toFixed(1)}회 정도의 차이가 난다. 45개 중 {within2}개가 무작위 기대 범위(±2σ) 안에 있으므로
+        현재의 {gap}회 격차는 잡음이다.
+        {' '}실제로 전반 {splitHalf.half}회의 핫넘버는 후반에 평균 {splitHalf.hotLateRank}위로 <b>오히려 내려갔고</b>
+        콜드넘버는 {splitHalf.coldLateRank}위로 올라왔다. <b>과거 출현 빈도로는 다음 번호를 예측할 수 없다.</b>
       </div>
     </div>
   )

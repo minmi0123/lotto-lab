@@ -10,8 +10,8 @@ export default function Layout() {
       <p className="eyebrow">Lotto Lab</p>
       <h1>로또 랩</h1>
       <p className="lead">
-        역대 당첨번호로 노는 데이터 토이앱
-        <span className="mini">통계와 포인트는 재미용이며 당첨을 보장하지 않습니다.</span>
+        역대 로또 당첨번호 통계와 번호 분석
+        <span className="mini">통계와 포인트는 재미용이며 당첨을 보장하지 않는다.</span>
       </p>
 
       <Header balance={balance} />
