@@ -342,6 +342,9 @@ a:hover{color:var(--primary-active);}
 .noise circle:hover{r:6.5;}
 .noise-tick{fill:var(--muted);font-size:9px;}
 .noise-cap{fill:var(--muted);font-size:9px;}
+.slope{max-width:720px;margin:4px auto 8px;}
+.slope .noise-tick,.slope .noise-cap{font-size:11px;}
+.slope-avg{fill:var(--body-strong);font-weight:700;}
 .hc-item{display:inline-flex;flex-direction:column;align-items:center;gap:4px;}
 .legend{
   display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;
@@ -382,4 +385,5 @@ a:hover{color:var(--primary-active);}
   .map-foot{gap:8px;}
   /* viewBox 가 축소되면 9px 는 5px 로 보임 → 사용자단위를 키워 가독성 확보 */
   .noise-tick,.noise-cap{font-size:16px;}
+  .slope .noise-tick,.slope .noise-cap{font-size:20px;}
 }

@@ -53,6 +53,18 @@ for (let t = Math.ceil(lo / 10) * 10; t <= hi; t += 10) ticks.push(t)
 const within2 = freq.slice(1).filter((c) => Math.abs(c - freqMean) <= 2 * freqSd).length
 const expect2 = Math.round(45 * 0.954)
 
+// ---------- 전반 핫·콜드 → 후반 순위 (slope) ----------
+// 핫 = 브랜드 노랑, 콜드 = 밝은 무채색. 로또 공 색(번호대 의미)과 겹치지 않게 빨강/파랑은 쓰지 않는다
+const COLD = '#d4d4d4'
+const SW = 600,
+  SH = 300,
+  sT = 34,
+  sB = 16,
+  xa = 140,
+  xb = 400
+const sy = (r) => sT + ((r - 1) / 44) * (SH - sT - sB)
+const lateAvg = (g) => g.reduce((s, d) => s + d.late, 0) / g.length
+
 const gap = Math.max(...freq.slice(1)) - Math.min(...freq.slice(1))
 const most = ranked[0].num
 const least = ranked[ranked.length - 1].num
@@ -60,6 +72,7 @@ const least = ranked[ranked.length - 1].num
 export default function HotCold() {
   const tip = useChartTip()
   return (
+    <>
     <div className="card full" id="sec-hotcold">
       <h2><Icon name="eye" />핫·콜드 분석</h2>
 
@@ -154,6 +167,62 @@ export default function HotCold() {
             </div>
           </>}
         />
+      </div>
+    </div>
+
+    <div className="card full" id="sec-hcsplit">
+      <h2><Icon name="split" />핫·콜드 번호 전후반 순위
+        <small>1~{splitHalf.half}회 상위·하위 6개가 {splitHalf.half + 1}~{totalRounds}회에서 기록한 출현 순위</small></h2>
+      <svg viewBox={`0 0 ${SW} ${SH}`} className="noise slope" role="img"
+        aria-label={`전반 핫 6개의 후반 평균 순위 ${splitHalf.hotLateRank}위, 전반 콜드 6개의 후반 평균 순위 ${splitHalf.coldLateRank}위, 무작위 기대 ${splitHalf.chance}위`}>
+        {/* 20위 눈금은 기대 순위(23위) 라벨과 겹쳐서 뺀다. 23위는 점선 끝 라벨로 */}
+        <text x={xa - 38} y={sy(splitHalf.chance) + 3} textAnchor="end" className="noise-tick slope-avg">{splitHalf.chance}위</text>
+        {[1, 10, 30, 40, 45].map((r) => (
+          <g key={r}>
+            <line x1={xa - 30} x2={xb + 10} y1={sy(r)} y2={sy(r)} stroke={AXIS} strokeWidth={0.6} />
+            <text x={xa - 38} y={sy(r) + 3} textAnchor="end" className="noise-tick">{r}위</text>
+          </g>
+        ))}
+        <text x={xa} y={sT - 16} textAnchor="middle" className="noise-cap">전반 순위</text>
+        <text x={xb} y={sT - 16} textAnchor="middle" className="noise-cap">후반 순위</text>
+
+        <line x1={xa - 30} x2={xb + 10} y1={sy(splitHalf.chance)} y2={sy(splitHalf.chance)}
+          stroke={CTX} strokeWidth={1} strokeDasharray="4 3" />
+
+        {[[splitHalf.hot, HI, '핫'], [splitHalf.cold, COLD, '콜드']].map(([g, col, name]) =>
+          g.map((d) => (
+            <g key={name + d.n}>
+              <line x1={xa} y1={sy(d.early)} x2={xb} y2={sy(d.late)} stroke={col} strokeWidth={1.5} opacity={0.55} />
+              {[['early', xa], ['late', xb]].map(([k, x]) => (
+                <circle key={k} cx={x} cy={sy(d[k])} r={4} fill={col} stroke={CARD} strokeWidth={1.5}
+                  {...tip.bind(`${name} ${d.n}번 · 전반 ${d.early}위 → 후반 ${d.late}위`)} />
+              ))}
+            </g>
+          ))
+        )}
+
+        {[[splitHalf.hot, HI, '핫'], [splitHalf.cold, COLD, '콜드']].map(([g, col, name]) => {
+          const v = lateAvg(g)
+          return (
+            <g key={name}>
+              <rect x={xb - 9} y={sy(v) - 2} width={18} height={4} rx={2} fill={col} />
+              <text x={xb + 18} y={sy(v) + 3} className="noise-cap slope-avg">{name} {v.toFixed(1)}위</text>
+            </g>
+          )
+        })}
+
+      </svg>
+      <div className="legend">
+        <i style={{ background: HI }} /> 핫 (전반 1~6위)
+        <span style={{ color: 'var(--muted-soft)' }}>·</span>
+        <i style={{ background: COLD }} /> 콜드 (전반 40~45위)
+        <span style={{ color: 'var(--muted-soft)' }}>·</span>
+        막대 = 6개 평균
+        <span style={{ color: 'var(--muted-soft)' }}>·</span>
+        점선 = 무작위로 골랐을 때 기대 순위
+      </div>
+
+      <div style={{ marginTop: 8 }}>
         <HelpStat
           label="전반 핫 Top6 → 후반 평균"
           value={`${splitHalf.hotLateRank}위`}
@@ -179,5 +248,6 @@ export default function HotCold() {
         />
       </div>
     </div>
+    </>
   )
 }

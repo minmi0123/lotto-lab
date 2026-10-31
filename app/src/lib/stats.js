@@ -102,8 +102,12 @@ export const splitHalf = (() => {
   const lateOrder = order(count(DATA.slice(half)))
   const lateRank = (n) => lateOrder.indexOf(n) + 1
   const avg = (ns) => ns.reduce((s, n) => s + lateRank(n), 0) / ns.length
+  // 그래프용: 번호별 전반 순위 → 후반 순위
+  const pairs = (ns) => ns.map((n) => ({ n, early: early.indexOf(n) + 1, late: lateRank(n) }))
   return {
     half,
+    hot: pairs(early.slice(0, 6)),
+    cold: pairs(early.slice(-6)),
     hotLateRank: avg(early.slice(0, 6)).toFixed(1),
     coldLateRank: avg(early.slice(-6)).toFixed(1),
     chance: (1 + 45) / 2,
